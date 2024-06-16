@@ -7,7 +7,7 @@ public class BinTableModel extends AbstractTableModel {
 //    private static final long serialVersionUID =
 
 
-    private int columnCount = 4;
+    private int columnCount = 16;
     private ArrayList<String []> dataArrayList;
 
 
@@ -26,16 +26,22 @@ public class BinTableModel extends AbstractTableModel {
     @Override
     public  String getColumnName(int columnIndex){
         switch (columnIndex){
-            case 0: return "Name";
-            case 1: return "Number";
-            case 2: return "str";
-            case 3: return "path";
-//            case 4: return "4";
-//            case 5: return "5";
-//            case 6: return "6";
-//            case 7: return "7";
-//            case 8: return "8";
-//            case 9: return "9";
+            case 0: return "00";
+            case 1: return "01";
+            case 2: return "02";
+            case 3: return "03";
+            case 4: return "04";
+            case 5: return "05";
+            case 6: return "06";
+            case 7: return "07";
+            case 8: return "08";
+            case 9: return "09";
+            case 10: return "0a";
+            case 11: return "0b";
+            case 12: return "0c";
+            case 13: return "0d";
+            case 14: return "0e";
+            case 15: return "0f";
         }
         return "";
     }
@@ -51,11 +57,17 @@ public class BinTableModel extends AbstractTableModel {
         return rows[columnIndex];
     }
 
-    public void addDate(String []row){
-        String []rowTable = new String[getColumnCount()];
-        rowTable = row;
-        dataArrayList.add(rowTable);
-
+    public void addData(byte[] data) {
+        String[] row = new String[columnCount];
+        for (int i = 0; i < columnCount; i++) {
+            if (i < data.length) {
+                row[i] = String.format("%02X", data[i]);
+            } else {
+                row[i] = "";
+            }
+        }
+        dataArrayList.add(row);
+        fireTableDataChanged();
     }
 }
 
