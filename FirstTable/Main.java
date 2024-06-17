@@ -29,6 +29,27 @@ public class Main {
 
         BinTableModel btm = new BinTableModel();
         JTable binTable = new JTable(btm);
+        binTable.setCellSelectionEnabled(true);
+        binTable.getTableHeader().setReorderingAllowed(false);
+        binTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        binTable.getTableHeader().setResizingAllowed(false);
+
+        // часть кода убирается в рабочей версии
+        File file = new File("FirstTable/TestFile/test.txt");
+
+        try {
+            byte[] data = Files.readAllBytes(file.toPath());
+            for (int i = 0; i < data.length; i += 16) {
+                byte[] hex = new byte[16];
+                System.arraycopy(data, i, hex, 0, Math.min(16, data.length - i));
+                btm.addData(hex);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // ----------------------
+
+        binTable.getColumnModel().getColumn(0).setCellRenderer(new Renderer());
         JScrollPane binTableScroolPage = new JScrollPane(binTable);
         binTableScroolPage.setPreferredSize((new Dimension(400, 400)));
 
@@ -39,6 +60,7 @@ public class Main {
                 int returnValue = fileChooser.showOpenDialog(null);
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
+
                     try {
                         byte[] data = Files.readAllBytes(selectedFile.toPath());
                         for (int i = 0; i < data.length; i += 16) {
