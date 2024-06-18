@@ -39,24 +39,38 @@ public class BinTableModel extends AbstractTableModel {
         return columnCount;
     }
 
+
+    public void addColumn(byte[] data) {
+        columnCount++;
+        this.addData(data);
+    }
+
+    public void deleteColumn(byte[] data) {
+        if (columnCount > 1) {
+            columnCount--;
+            this.addData(data);
+        }
+    }
+
+    public void addData(byte[] data) {
+        int dataIndex = 0;
+        while (dataIndex < data.length) {
+            String[] row = new String[columnCount];
+            row[0] = String.format("%X", dataArrayList.size());
+            for (int i = 1; i < columnCount && dataIndex < data.length; i++) {
+                row[i] = String.format("%02X", data[dataIndex++]);
+            }
+            dataArrayList.add(row);
+        }
+        fireTableDataChanged();
+    }
+
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         String []rows = dataArrayList.get(rowIndex);
         return rows[columnIndex];
     }
 
-    public void addData(byte[] data) {
-        String[] row = new String[columnCount];
-        row[0] = String.format("%X", dataArrayList.size());
-        for (int i = 1; i < columnCount; i++) {
-            if (i <= data.length) {
-                row[i] = String.format("%02X", data[i - 1]);
-            } else {
-                row[i] = "";
-            }
-        }
-        dataArrayList.add(row);
-        fireTableDataChanged();
-    }
+
 }
 

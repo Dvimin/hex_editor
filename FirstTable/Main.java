@@ -36,11 +36,11 @@ public class Main {
 
         // часть кода убирается в рабочей версии
         File file = new File("FirstTable/TestFile/test.txt");
+        byte[] hex = new byte[16];
 
         try {
             byte[] data = Files.readAllBytes(file.toPath());
             for (int i = 0; i < data.length; i += 16) {
-                byte[] hex = new byte[16];
                 System.arraycopy(data, i, hex, 0, Math.min(16, data.length - i));
                 btm.addData(hex);
             }
@@ -53,6 +53,11 @@ public class Main {
         JScrollPane binTableScroolPage = new JScrollPane(binTable);
         binTableScroolPage.setPreferredSize((new Dimension(400, 400)));
 
+        JButton addColumnButton = new JButton("+");
+        JButton deleteColumnButton = new JButton("-");
+
+
+
         openfileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -63,12 +68,13 @@ public class Main {
 
                     try {
                         byte[] data = Files.readAllBytes(selectedFile.toPath());
-                        for (int i = 0; i < data.length; i += 16) {
-                            byte[] hex = new byte[16];
-                            System.arraycopy(data, i, hex, 0, Math.min(16, data.length - i));
+                        for (int i = 0; i < data.length; i += btm.getColumnCount()) {
+                            byte[] hex = new byte[btm.getColumnCount()];
+                            System.arraycopy(data, i, hex, 0, Math.min(btm.getColumnCount(), data.length - i));
                             btm.addData(hex);
                         }
                     } catch (IOException e) {
+                        
                         e.printStackTrace();
                     }
                 }
@@ -82,6 +88,19 @@ public class Main {
             }
         });
 
+        addColumnButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                btm.addColumn(hex);
+            }
+        });
+
+        deleteColumnButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                btm.deleteColumn(hex);
+            }
+        });
 
 
 
