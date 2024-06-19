@@ -6,6 +6,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
 
 
 public class Main {
@@ -34,6 +37,25 @@ public class Main {
         binTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         binTable.getTableHeader().setResizingAllowed(false);
 
+
+        binTable.setRowSelectionAllowed(true);
+        binTable.setColumnSelectionAllowed(false);
+        binTable.setGridColor(Color.WHITE);
+        JTableHeader header = binTable.getTableHeader();
+        header.setDefaultRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                cell.setBackground(Color.LIGHT_GRAY);
+                if (cell instanceof JComponent) {
+                    ((JComponent) cell).setBorder(BorderFactory.createMatteBorder(0, 0, 1, 1, Color.WHITE));
+                }
+                return cell;
+            }
+        });
+
+
+
         // часть кода убирается в рабочей версии
         File file = new File("FirstTable/TestFile/test.txt");
         byte[] hex = new byte[16];
@@ -51,10 +73,19 @@ public class Main {
 
         binTable.getColumnModel().getColumn(0).setCellRenderer(new Renderer());
         JScrollPane binTableScroolPage = new JScrollPane(binTable);
-        binTableScroolPage.setPreferredSize((new Dimension(400, 400)));
+        binTable.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 
-        JButton addColumnButton = new JButton("+");
-        JButton deleteColumnButton = new JButton("-");
+        TableColumn column = null;
+        column = binTable.getColumnModel().getColumn(0);
+        column.setPreferredWidth(80);
+        for (int i = 1; i < binTable.getColumnCount(); i ++) {
+            column = binTable.getColumnModel().getColumn(i);
+            if ((i)%4 == 0) {
+                column.setPreferredWidth(50);
+            } else {
+                column.setPreferredWidth(30);
+            }
+        }
 
 
 
@@ -74,7 +105,7 @@ public class Main {
                             btm.addData(hex);
                         }
                     } catch (IOException e) {
-                        
+
                         e.printStackTrace();
                     }
                 }
@@ -88,57 +119,52 @@ public class Main {
             }
         });
 
-        addColumnButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                btm.addColumn(hex);
-            }
-        });
-
-        deleteColumnButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                btm.deleteColumn(hex);
-            }
-        });
-
-
-
-
+//        JButton addColumnButton = new JButton("+");
+//        JButton deleteColumnButton = new JButton("-");
+//
+//        addColumnButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent actionEvent) {
+//                btm.addColumn(hex);
+//            }
+//        });
+//
+//        deleteColumnButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent actionEvent) {
+//                btm.deleteColumn(hex);
+//            }
+//        });
         final int COUNTButton = 7;
-        frame.add(binTableScroolPage, new GridBagConstraints(0, 0, COUNTButton, 1, 1, 1,
+
+        JPanel columnButtonPanel = new JPanel(new GridBagLayout());
+//        Component[] columnComponents = {addColumnButton, deleteColumnButton};
+//        for (int i = 0; i < columnComponents.length; i++) {
+//            columnButtonPanel.add(columnComponents[i], new GridBagConstraints(0, i, 1, 1, 1, 1,
+//                    GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
+//                    new Insets(1, 1, 1, 1), 0, 0));
+//        }
+
+        JPanel panel = new JPanel(new BorderLayout());
+
+        panel.add(binTableScroolPage, BorderLayout.CENTER);
+//        panel.add(columnButtonPanel, BorderLayout.EAST);
+
+        frame.add(panel, new GridBagConstraints(0, 0, COUNTButton, 1, 1, 1,
                 GridBagConstraints.NORTH, GridBagConstraints.BOTH,
                 new Insets(1, 1, 1, 1), 0, 0));
 
-        frame.add(addButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
-                GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
+
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        Component[] components = {addButton, deleteButton, clearButton, searchText, searchButton, openfileButton, savefileButton};
+        for (int i = 0; i < components.length; i++) {
+            buttonPanel.add(components[i], new GridBagConstraints(i, 0, 1, 1, 1, 1,
+                    GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
+                    new Insets(1, 1, 1, 1), 0, 0));
+        }
+        frame.add(buttonPanel, new GridBagConstraints(0, 1, COUNTButton, 1, 1, 0,
+                GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL,
                 new Insets(1, 1, 1, 1), 0, 0));
-
-        frame.add(deleteButton, new GridBagConstraints(1, 1, 1, 1, 1, 1,
-                GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
-                new Insets(1, 1, 1, 1), 0, 0));
-
-        frame.add(clearButton, new GridBagConstraints(2, 1, 1, 1, 1, 1,
-                GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
-                new Insets(1, 1, 1, 1), 0, 0));
-
-        frame.add(searchText, new GridBagConstraints(3, 1, 1, 1, 1, 1,
-                GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
-                new Insets(1, 1, 1, 1), 0, 0));
-
-        frame.add(searchButton, new GridBagConstraints(4, 1, 1, 1, 1, 1,
-                GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
-                new Insets(1, 1, 1, 1), 0, 0));
-
-        frame.add(openfileButton, new GridBagConstraints(5, 1, 1, 1, 1, 1,
-                GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
-                new Insets(1, 1, 1, 1), 0, 0));
-
-        frame.add(savefileButton, new GridBagConstraints(6, 1, 1, 1, 1, 1,
-                GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
-                new Insets(1, 1, 1, 1), 0, 0));
-
-
 
 
         frame.setVisible(true);

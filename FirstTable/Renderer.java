@@ -10,6 +10,13 @@ public class Renderer extends DefaultTableCellRenderer {
         Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
         cell.setBackground(Color.LIGHT_GRAY);
+
+        if (cell instanceof JComponent) {
+            ((JComponent) cell).setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        }
+
         return cell;
     }
+
+
 }

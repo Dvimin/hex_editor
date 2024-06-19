@@ -28,7 +28,7 @@ public class BinTableModel extends AbstractTableModel {
     @Override
     public String getColumnName(int columnIndex) {
         if (columnIndex == 0){
-            return "Row Header";
+            return "";
         } else {
             return String.format("%02X", columnIndex - 1);
         }
@@ -56,7 +56,7 @@ public class BinTableModel extends AbstractTableModel {
         int dataIndex = 0;
         while (dataIndex < data.length) {
             String[] row = new String[columnCount];
-            row[0] = String.format("%X", dataArrayList.size());
+            row[0] = String.format("%08X", dataArrayList.size());
             for (int i = 1; i < columnCount && dataIndex < data.length; i++) {
                 row[i] = String.format("%02X", data[dataIndex++]);
             }
