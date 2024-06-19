@@ -39,7 +39,7 @@ public class BinTableModel extends AbstractTableModel {
         return columnCount;
     }
 
-
+// не используются (не по заданию)
     public void addColumn(byte[] data) {
         columnCount++;
         this.addData(data);

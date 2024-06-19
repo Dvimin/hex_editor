@@ -16,7 +16,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
 
-        JFrame frame = new JFrame("Table");
+        JFrame frame = new JFrame("HEX-editor");
         frame.setSize(new Dimension(600, 400));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
@@ -27,8 +27,7 @@ public class Main {
         JButton clearButton = new JButton("Очистить");
         JTextField searchText = new JTextField(10);
         JButton searchButton = new JButton("Поиск");
-        JButton openfileButton = new JButton("Отыкрыть");
-        JButton savefileButton = new JButton("Сохранить");
+
 
         BinTableModel btm = new BinTableModel();
         JTable binTable = new JTable(btm);
@@ -87,9 +86,24 @@ public class Main {
             }
         }
 
+        JMenuBar menuBar = new JMenuBar();
 
+        JMenu fileMenu = new JMenu("Файл");
+        JMenu editMenu= new JMenu("Правка");
+        JMenu helpMenu = new JMenu("Помощь");
+        menuBar.add(fileMenu);
+        menuBar.add(editMenu);
+        menuBar.add(helpMenu);
 
-        openfileButton.addActionListener(new ActionListener() {
+        JMenuItem openMenuItem = new JMenuItem("Открыть");
+        JMenuItem saveMenuItem = new JMenuItem("Сохранить");
+        JMenuItem exitMenuItem = new JMenuItem("Выйти");
+
+        fileMenu.add(openMenuItem);
+        fileMenu.add(saveMenuItem);
+        fileMenu.add(exitMenuItem);
+
+        openMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 JFileChooser fileChooser = new JFileChooser();
@@ -111,13 +125,35 @@ public class Main {
                 }
             }
         });
-        savefileButton.addActionListener(new ActionListener() {
+        saveMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 JFileChooser fileChooser = new JFileChooser();
                 fileChooser.showSaveDialog(frame);
             }
         });
+
+        exitMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(1);
+            }
+        });
+
+
+        JMenuItem helpmenuItem1 = new JMenuItem("Нужна помощь?");
+        helpMenu.add(helpmenuItem1);
+
+        helpMenu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            }
+        });
+
+        frame.setJMenuBar(menuBar);
+
+
+
 
 //        JButton addColumnButton = new JButton("+");
 //        JButton deleteColumnButton = new JButton("-");
@@ -135,9 +171,9 @@ public class Main {
 //                btm.deleteColumn(hex);
 //            }
 //        });
-        final int COUNTButton = 7;
+        final int COUNTButton = 5;
 
-        JPanel columnButtonPanel = new JPanel(new GridBagLayout());
+//        JPanel columnButtonPanel = new JPanel(new GridBagLayout());
 //        Component[] columnComponents = {addColumnButton, deleteColumnButton};
 //        for (int i = 0; i < columnComponents.length; i++) {
 //            columnButtonPanel.add(columnComponents[i], new GridBagConstraints(0, i, 1, 1, 1, 1,
@@ -146,7 +182,6 @@ public class Main {
 //        }
 
         JPanel panel = new JPanel(new BorderLayout());
-
         panel.add(binTableScroolPage, BorderLayout.CENTER);
 //        panel.add(columnButtonPanel, BorderLayout.EAST);
 
@@ -156,7 +191,7 @@ public class Main {
 
 
         JPanel buttonPanel = new JPanel(new GridBagLayout());
-        Component[] components = {addButton, deleteButton, clearButton, searchText, searchButton, openfileButton, savefileButton};
+        Component[] components = {addButton, deleteButton, clearButton, searchText, searchButton};
         for (int i = 0; i < components.length; i++) {
             buttonPanel.add(components[i], new GridBagConstraints(i, 0, 1, 1, 1, 1,
                     GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
