@@ -31,21 +31,29 @@ public class Main {
 
         BinTableModel btm = new BinTableModel();
         JTable binTable = new JTable(btm);
-        binTable.setCellSelectionEnabled(true);
         binTable.getTableHeader().setReorderingAllowed(false);
-        binTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         binTable.getTableHeader().setResizingAllowed(false);
+        binTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        binTable.setCellSelectionEnabled(true);
+        binTable.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        binTable.getSelectionModel().addListSelectionListener(new CustomSelectionListener(binTable));
 
-
-        binTable.setRowSelectionAllowed(true);
-        binTable.setColumnSelectionAllowed(false);
         binTable.setGridColor(Color.WHITE);
+        binTable.getColumnModel().getColumn(0).setCellRenderer(new RendererNameRow());
+        for (int i = 1; i <binTable.getColumnCount(); i++){
+            binTable.getColumnModel().getColumn(i).setCellRenderer(new OtherColumnsRenderer());
+
+        }
+
+
         JTableHeader header = binTable.getTableHeader();
         header.setDefaultRenderer(new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+//                if (isSelected)cell.setBackground(Color.YELLOW);LIGHT_GRAY
                 cell.setBackground(Color.LIGHT_GRAY);
+
                 if (cell instanceof JComponent) {
                     ((JComponent) cell).setBorder(BorderFactory.createMatteBorder(0, 0, 1, 1, Color.WHITE));
                 }
@@ -70,7 +78,7 @@ public class Main {
         }
         // ----------------------
 
-        binTable.getColumnModel().getColumn(0).setCellRenderer(new Renderer());
+        binTable.getColumnModel().getColumn(0).setCellRenderer(new RendererNameRow());
         JScrollPane binTableScroolPage = new JScrollPane(binTable);
         binTable.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 
