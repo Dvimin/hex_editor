@@ -2,10 +2,13 @@ package FirstTable;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
@@ -27,10 +30,50 @@ public class Main {
         JButton clearButton = new JButton("Очистить");
         JTextField searchText = new JTextField(10);
         JButton searchButton = new JButton("Поиск");
-
-
         BinTableModel btm = new BinTableModel();
-        JTable binTable = new JTable(btm);
+
+        JTable binTable = new JTable(btm) {
+            @Override
+            public String getToolTipText(MouseEvent event) {
+                java.awt.Point p = event.getPoint();
+                int rowIndex = rowAtPoint(p);
+                int colIndex = columnAtPoint(p);
+
+                if (rowIndex > -1 && colIndex > -1 && isCellSelected(rowIndex, colIndex)) {
+                    int[] selectedRows = getSelectedRows();
+                    int[] selectedColumns = getSelectedColumns();
+                    StringBuilder tooltipUnsigned = new StringBuilder("int без знака:");
+                    StringBuilder tooltipSigned =   new StringBuilder("int со знаком:");
+
+                    for (int row : selectedRows) {
+                        for (int column : selectedColumns) {
+                            Object cellValue = getValueAt(row, column);
+                            if (cellValue != null) {
+                                int decimalValue = Integer.parseInt(cellValue.toString(), 16);
+                                tooltipUnsigned.append(" ").append(decimalValue).append(";");
+                                tooltipSigned.append(" ").append((byte) decimalValue).append(";");
+                            }
+                        }
+                    }
+
+                    if (tooltipUnsigned.length() > 0 && tooltipUnsigned.charAt(tooltipUnsigned.length() - 1) == ';') {
+                        tooltipUnsigned.deleteCharAt(tooltipUnsigned.length() - 1);
+                    }
+
+                    if (tooltipSigned.length() > 0 && tooltipSigned.charAt(tooltipSigned.length() - 1) == ';') {
+                        tooltipSigned.deleteCharAt(tooltipSigned.length() - 1);
+                    }
+
+                    return "<html>" + tooltipUnsigned.toString() + "<br>" + tooltipSigned.toString() + "</html>";
+                }
+
+                return super.getToolTipText(event);
+            }
+        };
+
+        Border border = BorderFactory.createLineBorder(new Color(0,0,0,0), 0);
+        UIManager.put("Table.focusCellHighlightBorder", border);
+
         binTable.getTableHeader().setReorderingAllowed(false);
         binTable.getTableHeader().setResizingAllowed(false);
         binTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -45,13 +88,11 @@ public class Main {
 
         }
 
-
         JTableHeader header = binTable.getTableHeader();
         header.setDefaultRenderer(new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-//                if (isSelected)cell.setBackground(Color.YELLOW);LIGHT_GRAY
                 cell.setBackground(Color.LIGHT_GRAY);
 
                 if (cell instanceof JComponent) {
@@ -61,9 +102,7 @@ public class Main {
             }
         });
 
-
-
-        // часть кода убирается в рабочей версии
+        // ---------------------------------------------------- часть кода убирается в рабочей версии
         File file = new File("FirstTable/TestFile/test.txt");
         byte[] hex = new byte[16];
 
@@ -94,6 +133,8 @@ public class Main {
             }
         }
 
+
+        // ---------------------------------------- Созддание меню ---------------------
         JMenuBar menuBar = new JMenuBar();
 
         JMenu fileMenu = new JMenu("Файл");
@@ -162,6 +203,8 @@ public class Main {
 
 
 
+
+//------------------------------------------------- Отображение кнопок на панель и размещение элементов на фрэйме -------------------------
 
 //        JButton addColumnButton = new JButton("+");
 //        JButton deleteColumnButton = new JButton("-");
