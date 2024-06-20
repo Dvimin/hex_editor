@@ -42,6 +42,9 @@ public class Main {
                 if (rowIndex > -1 && colIndex > -1 && isCellSelected(rowIndex, colIndex)) {
                     int[] selectedRows = getSelectedRows();
                     int[] selectedColumns = getSelectedColumns();
+                    if (selectedColumns.length != 1 && selectedColumns.length != 2 && selectedColumns.length != 4 && selectedColumns.length != 8){
+                        return "Error";
+                    }
                     StringBuilder tooltipUnsigned = new StringBuilder("int без знака:");
                     StringBuilder tooltipSigned =   new StringBuilder("int со знаком:");
 
