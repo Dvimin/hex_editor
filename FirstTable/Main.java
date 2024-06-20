@@ -32,6 +32,7 @@ public class Main {
         JButton searchButton = new JButton("Поиск");
         BinTableModel btm = new BinTableModel();
 
+//       ------------------------------------------------------------ подсказки при выделении области ячеек ----------------------------
         JTable binTable = new JTable(btm) {
             @Override
             public String getToolTipText(MouseEvent event) {
@@ -58,18 +59,14 @@ public class Main {
                             }
                         }
                     }
-
                     if (tooltipUnsigned.length() > 0 && tooltipUnsigned.charAt(tooltipUnsigned.length() - 1) == ';') {
                         tooltipUnsigned.deleteCharAt(tooltipUnsigned.length() - 1);
                     }
-
                     if (tooltipSigned.length() > 0 && tooltipSigned.charAt(tooltipSigned.length() - 1) == ';') {
                         tooltipSigned.deleteCharAt(tooltipSigned.length() - 1);
                     }
-
                     return "<html>" + tooltipUnsigned.toString() + "<br>" + tooltipSigned.toString() + "</html>";
                 }
-
                 return super.getToolTipText(event);
             }
         };
@@ -88,7 +85,7 @@ public class Main {
         binTable.getColumnModel().getColumn(0).setCellRenderer(new RendererNameRow());
         for (int i = 1; i <binTable.getColumnCount(); i++){
             binTable.getColumnModel().getColumn(i).setCellRenderer(new OtherColumnsRenderer());
-
+//            binTable.getColumnModel().getColumn(i).setCellEditor(new MyCellEditor());
         }
 
         JTableHeader header = binTable.getTableHeader();
@@ -104,6 +101,11 @@ public class Main {
                 return cell;
             }
         });
+
+        // ------------------------ редактирование таблицы
+
+
+
 
         // ---------------------------------------------------- часть кода убирается в рабочей версии
         File file = new File("FirstTable/TestFile/test.txt");
