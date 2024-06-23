@@ -107,7 +107,7 @@ public class Main {
 
 
 
-        // ---------------------------------------------------- часть кода убирается в рабочей версии
+        // ---------------------------------------------------- часть кода убирается в рабочей версии---------------------------------
         File file = new File("FirstTable/TestFile/test.txt");
         byte[] hex = new byte[16];
 
@@ -120,7 +120,7 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // ----------------------
+        // ---------------------------------------------------------------------------------------------------------------
 
         binTable.getColumnModel().getColumn(0).setCellRenderer(new RendererNameRow());
         JScrollPane binTableScroolPage = new JScrollPane(binTable);
@@ -164,7 +164,6 @@ public class Main {
                 int returnValue = fileChooser.showOpenDialog(null);
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
-
                     try {
                         byte[] data = Files.readAllBytes(selectedFile.toPath());
                         for (int i = 0; i < data.length; i += btm.getColumnCount()) {
@@ -173,7 +172,6 @@ public class Main {
                             btm.addData(hex);
                         }
                     } catch (IOException e) {
-
                         e.printStackTrace();
                     }
                 }
