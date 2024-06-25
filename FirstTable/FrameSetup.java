@@ -14,10 +14,11 @@ public class FrameSetup {
         frame.setLocationRelativeTo(null);
         frame.setLayout(new GridBagLayout());
 
-        ButtonSetup buttonSetup = new ButtonSetup();
-        buttonSetup.setupButtons(frame);
-
+        JTable binTable = new JTable();
         BinTableModel btm = new BinTableModel();
+
+        ButtonSetup buttonSetup = new ButtonSetup();
+        buttonSetup.setupButtons(frame, binTable, btm);
 
         File file = new File("FirstTable/TestFile/test.txt");
         byte[] hex = new byte[16];
