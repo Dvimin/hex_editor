@@ -20,7 +20,7 @@ public class FileActions {
                     System.arraycopy(data, i, hex, 0, Math.min(btm.getColumnCount(), data.length - i));
                     btm.addData(hex);
                 }
-                System.out.println("Hello");
+                System.out.println("The file is open!");
             } catch (IOException e) {
                 e.printStackTrace();
             }

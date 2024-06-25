@@ -21,6 +21,13 @@ public class BinTableModel extends AbstractTableModel {
     }
 
     @Override
+    public void setValueAt(Object value, int row, int col) {
+        String[] rowData = dataArrayList.get(row);
+        rowData[col] = (String) value;
+        fireTableCellUpdated(row, col);
+    }
+
+    @Override
     public int getRowCount() {
         return dataArrayList.size();
     }

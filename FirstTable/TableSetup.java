@@ -63,6 +63,11 @@ public class TableSetup {
             binTable.getColumnModel().getColumn(i).setCellRenderer(new OtherColumnsRenderer());
         }
 
+        MyCellEditor editor = new MyCellEditor();
+        for (int i = 1; i < binTable.getColumnCount(); i++) {
+            binTable.getColumnModel().getColumn(i).setCellEditor(editor);
+        }
+
         JTableHeader header = binTable.getTableHeader();
         header.setDefaultRenderer(new DefaultTableCellRenderer() {
             @Override
