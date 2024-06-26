@@ -10,9 +10,6 @@ public class BinTableModel extends AbstractTableModel {
 
     public BinTableModel(){
         dataArrayList = new ArrayList<String []>();
-        for (int i = 0; i < dataArrayList.size(); i++){
-            dataArrayList.add(new String[getColumnCount()]);
-        }
     }
 
     @Override

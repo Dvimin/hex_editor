@@ -54,8 +54,13 @@ public class TableSetup {
         binTable.getTableHeader().setReorderingAllowed(false);
         binTable.getTableHeader().setResizingAllowed(false);
         binTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
         binTable.setCellSelectionEnabled(true);
         binTable.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+
+        ButtonSetup buttonSetup = new ButtonSetup();
+        buttonSetup.setupButtons(frame, binTable, btm);
+
         binTable.getSelectionModel().addListSelectionListener(new CustomSelectionListener(binTable));
         binTable.setGridColor(Color.WHITE);
         binTable.getColumnModel().getColumn(0).setCellRenderer(new RendererNameRow());

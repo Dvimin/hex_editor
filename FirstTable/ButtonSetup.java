@@ -8,11 +8,27 @@ import java.util.Arrays;
 public class ButtonSetup {
 
     public static void setupButtons(JFrame frame, JTable binTable, BinTableModel btm) {
+        JButton editButton = new JButton("Изменить байт");
         JButton deleteButton = new JButton("Удалить байт");
         JButton copyBlockButton = new JButton("Копировать блок");
         JButton pasteWithShiftButton = new JButton("Вставить со сдвигом");
         JButton pasteWithoutShiftButton = new JButton("Вставить без сдвига");
         JButton clearButton = new JButton("Очистить данные");
+
+        editButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int row = binTable.getSelectedRow();
+                int column = binTable.getSelectedColumn();
+                MyCellEditor editor = new MyCellEditor();
+                if (row != -1 && column != -1) {
+                    binTable.getColumnModel().getColumn(column).setCellEditor(editor);
+                    binTable.editCellAt(row, column, e);
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку для редактирования.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
 
         deleteButton.addActionListener(new ActionListener() {
             @Override
@@ -24,8 +40,7 @@ public class ButtonSetup {
                         btm.setValueAt("00", row, column);
                     }
                 }
-                System.out.println("Selected rows: " + Arrays.toString(selectedRows));
-                System.out.println("Selected columns: " + Arrays.toString(selectedColumns));
+                System.out.println("deleting a cell " + Arrays.toString(selectedRows) + Arrays.toString(selectedColumns) +  ";");
                 binTable.repaint();
             }
         });
@@ -72,7 +87,7 @@ public class ButtonSetup {
         });
 
         JPanel buttonPanel = new JPanel(new GridBagLayout());
-        Component[] components = {deleteButton, copyBlockButton, pasteWithShiftButton, pasteWithoutShiftButton, clearButton};
+        Component[] components = {editButton, deleteButton, copyBlockButton, pasteWithShiftButton, pasteWithoutShiftButton, clearButton};
         for (int i = 0; i < components.length; i++) {
             buttonPanel.add(components[i], new GridBagConstraints(i, 0, 1, 1, 1, 1,
                     GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
