@@ -7,14 +7,15 @@ import java.util.Arrays;
 
 public class ButtonSetup {
 
+    private static String[][] copiedBlock;
+
     public static void setupButtons(JFrame frame, JTable binTable, BinTableModel btm) {
-        JButton editButton = new JButton("Изменить байт");
-        JButton deleteButton = new JButton("Удалить байт");
-        JButton copyBlockButton = new JButton("Копировать блок");
+        JButton editButton = new JButton("Изменить");
+        JButton deleteButton = new JButton("Обнулить");
         JButton pasteWithShiftButton = new JButton("Вставить со сдвигом");
+        JButton copyBlockButton = new JButton("Копировать блок");
         JButton pasteWithoutShiftButton = new JButton("Вставить без сдвига");
         JButton clearButton = new JButton("Очистить данные");
-
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -40,7 +41,6 @@ public class ButtonSetup {
                         btm.setValueAt("00", row, column);
                     }
                 }
-                System.out.println("deleting a cell " + Arrays.toString(selectedRows) + Arrays.toString(selectedColumns) +  ";");
                 binTable.repaint();
             }
         });
@@ -50,23 +50,44 @@ public class ButtonSetup {
             public void actionPerformed(ActionEvent e) {
                 int[] selectedRows = binTable.getSelectedRows();
                 int[] selectedColumns = binTable.getSelectedColumns();
-                byte[][] copiedBlock = new byte[selectedRows.length][selectedColumns.length];
+                copiedBlock = new String[selectedRows.length][selectedColumns.length];
 
                 for (int i = 0; i < selectedRows.length; i++) {
                     for (int j = 0; j < selectedColumns.length; j++) {
-                        copiedBlock[i][j] = (byte) btm.getValueAt(selectedRows[i], selectedColumns[j]);
+                        copiedBlock[i][j] = (String) btm.getValueAt(selectedRows[i], selectedColumns[j]);
                     }
                 }
             }
         });
 
-        pasteWithShiftButton.addActionListener(new ActionListener() {
+        pasteWithoutShiftButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (copiedBlock != null) {
+                    int[] selectedRows = binTable.getSelectedRows();
+                    int[] selectedColumns = binTable.getSelectedColumns();
+
+                    if (selectedRows.length == copiedBlock.length &&
+                            selectedColumns.length == copiedBlock[0].length) {
+                        for (int i = 0; i < selectedRows.length; i++) {
+                            for (int j = 0; j < selectedColumns.length; j++) {
+                                btm.setValueAt(copiedBlock[i][j], selectedRows[i], selectedColumns[j]);
+                            }
+                        }
+                        binTable.repaint();
+                    } else {
+                        JOptionPane.showMessageDialog(frame,
+                                "Размер скопированного блока и выделенного участка не совпадают",
+                                "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Сначала скопируйте блок",
+                            "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
-        pasteWithoutShiftButton.addActionListener(new ActionListener() {
+        pasteWithShiftButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
             }
@@ -87,7 +108,7 @@ public class ButtonSetup {
         });
 
         JPanel buttonPanel = new JPanel(new GridBagLayout());
-        Component[] components = {editButton, deleteButton, copyBlockButton, pasteWithShiftButton, pasteWithoutShiftButton, clearButton};
+        Component[] components = {editButton, deleteButton, copyBlockButton, pasteWithoutShiftButton, pasteWithShiftButton, clearButton};
         for (int i = 0; i < components.length; i++) {
             buttonPanel.add(components[i], new GridBagConstraints(i, 0, 1, 1, 1, 1,
                     GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
