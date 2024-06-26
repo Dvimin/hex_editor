@@ -16,6 +16,28 @@ public class ButtonSetup {
         JButton copyBlockButton = new JButton("Копировать блок");
         JButton pasteWithoutShiftButton = new JButton("Вставить без сдвига");
         JButton clearButton = new JButton("Очистить данные");
+        JButton insertCellButton = new JButton("Вставить ячейку справа");
+
+        insertCellButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int row = binTable.getSelectedRow();
+                int column = binTable.getSelectedColumn();
+
+                if (row != -1 && column != -1) {
+                    int columnCount = btm.getColumnCount();
+
+                    for (int j = columnCount - 2; j > column; j--) {
+                        btm.setValueAt(btm.getValueAt(row, j), row, j + 1);
+                    }
+                    btm.setValueAt("00", row, column + 1);
+                    binTable.setModel(btm);
+                    binTable.repaint();
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -108,7 +130,7 @@ public class ButtonSetup {
         });
 
         JPanel buttonPanel = new JPanel(new GridBagLayout());
-        Component[] components = {editButton, deleteButton, copyBlockButton, pasteWithoutShiftButton, pasteWithShiftButton, clearButton};
+        Component[] components = {editButton, deleteButton, copyBlockButton, pasteWithoutShiftButton, pasteWithShiftButton, clearButton, insertCellButton};
         for (int i = 0; i < components.length; i++) {
             buttonPanel.add(components[i], new GridBagConstraints(i, 0, 1, 1, 1, 1,
                     GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
