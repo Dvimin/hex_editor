@@ -69,6 +69,58 @@ public class BinTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
+    public void addEmptyRowWithLogic() {
+        String[] row = new String[columnCount];
+        row[0] = String.format("%08X", dataArrayList.size());
+        for (int i = 1; i < columnCount; i++) {
+            row[i] = "";
+        }
+        dataArrayList.add(row);
+        fireTableRowsInserted(dataArrayList.size()-1, dataArrayList.size()-1);
+    }
+
+    // Смещение целой строки вправо
+    public String shiftRowAndInsert(int row, String element) {
+        int columnCount = getColumnCount();
+        String lastCellValue = getValueAt(row, columnCount - 1).toString();
+
+        for (int j = columnCount - 2; j >= 1; j--) {
+            String cellValue = getValueAt(row, j).toString();
+            setValueAt(cellValue, row, j + 1);
+        }
+
+        setValueAt(element, row, 1);
+
+        fireTableDataChanged();
+        return lastCellValue;
+    }
+
+    // Смещение выбранной строки
+    public String shiftColumnAndInsert(int row, int column) {
+        int columnCount = getColumnCount();
+        if (column == columnCount - 1) {
+            return "";
+        }
+        String lastCellValue = getValueAt(row, columnCount - 1).toString();
+
+        for (int j = columnCount - 2; j > column; j--) {
+            String cellValue = getValueAt(row, j).toString();
+            setValueAt(cellValue, row, j + 1);
+        }
+        setValueAt("", row, column + 1);
+        fireTableDataChanged();
+        return lastCellValue;
+    }
+
+    public void insertCellAndShift(int selectedRow, int selectedColumn) {
+        String valueToShift = shiftColumnAndInsert(selectedRow, selectedColumn);
+        for (int i = selectedRow + 1; i < getRowCount(); i++) {
+            valueToShift = shiftRowAndInsert(i, valueToShift);
+        }
+    }
+
+
+
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         String []rows = dataArrayList.get(rowIndex);

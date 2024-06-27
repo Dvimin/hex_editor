@@ -25,19 +25,21 @@ public class ButtonSetup {
                 int column = binTable.getSelectedColumn();
 
                 if (row != -1 && column != -1) {
-                    int columnCount = btm.getColumnCount();
-
-                    for (int j = columnCount - 2; j > column; j--) {
-                        btm.setValueAt(btm.getValueAt(row, j), row, j + 1);
-                    }
-                    btm.setValueAt("00", row, column + 1);
-                    binTable.setModel(btm);
+                    int selectedRow = binTable.getSelectedRow();
+                    int selectedColumn = binTable.getSelectedColumn();
+                    ((BinTableModel) binTable.getModel()).insertCellAndShift(selectedRow, selectedColumn);
                     binTable.repaint();
+
+                    if (selectedRow != -1 && selectedColumn != -1) {
+                        binTable.changeSelection(selectedRow, selectedColumn, false, false);
+                    }
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
+
+
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
