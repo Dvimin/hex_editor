@@ -21,18 +21,12 @@ public class ButtonSetup {
         insertCellButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int row = binTable.getSelectedRow();
-                int column = binTable.getSelectedColumn();
-
-                if (row != -1 && column != -1) {
-                    int selectedRow = binTable.getSelectedRow();
-                    int selectedColumn = binTable.getSelectedColumn();
+                int selectedRow = binTable.getSelectedRow();
+                int selectedColumn = binTable.getSelectedColumn();
+                if (selectedRow != -1 && selectedColumn != -1) {
                     ((BinTableModel) binTable.getModel()).insertCellAndShift(selectedRow, selectedColumn);
                     binTable.repaint();
-
-                    if (selectedRow != -1 && selectedColumn != -1) {
-                        binTable.changeSelection(selectedRow, selectedColumn, false, false);
-                    }
+                    binTable.changeSelection(selectedRow, selectedColumn, false, false);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }

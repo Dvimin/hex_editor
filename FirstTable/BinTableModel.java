@@ -81,7 +81,7 @@ public class BinTableModel extends AbstractTableModel {
     }
 
     // Смещение целой строки вправо
-    public String shiftRowAndInsert(int row, String element) {
+    public String shiftAllRow(int row, String element) {
         int columnCount = getColumnCount();
         String lastCellValue = getValueAt(row, columnCount - 1).toString();
 
@@ -97,13 +97,15 @@ public class BinTableModel extends AbstractTableModel {
     }
 
     // Смещение выбранной строки
-    public String shiftColumnAndInsert(int row, int column) {
+    public String shiftSelectedRow(int row, int column) {
         int columnCount = getColumnCount();
         if (column == columnCount - 1) {
             return "";
         }
         String lastCellValue = getValueAt(row, columnCount - 1).toString();
-
+//        if (row == getRowCount() && lastCellValue == ""){
+//
+//        }
         for (int j = columnCount - 2; j > column; j--) {
             String cellValue = getValueAt(row, j).toString();
             setValueAt(cellValue, row, j + 1);
@@ -116,18 +118,24 @@ public class BinTableModel extends AbstractTableModel {
     public void insertCellAndShift(int selectedRow, int selectedColumn) {
         int lastRow = getRowCount() - 1;
         int lastColumn = getColumnCount() - 1;
-        if (selectedRow == lastRow && selectedColumn == lastColumn) {
-            addEmptyRowWithLogic("");
+        if (selectedRow == lastRow) {
+            String lastElement = (String) getValueAt(lastRow, lastColumn);
+            if (lastElement.equals("")) {
+                shiftSelectedRow(selectedRow, selectedColumn);
+            } else {
+                String valueToShift = shiftSelectedRow(selectedRow, selectedColumn);
+                addEmptyRowWithLogic(valueToShift);
+            }
         } else {
-            String valueToShift = shiftColumnAndInsert(selectedRow, selectedColumn);
+            String valueToShift = shiftSelectedRow(selectedRow, selectedColumn);
             for (int i = selectedRow + 1; i < lastRow; i++) {
-                valueToShift = shiftRowAndInsert(i, valueToShift);
+                valueToShift = shiftAllRow(i, valueToShift);
             }
             String lastElement = (String) getValueAt(lastRow, lastColumn);
             if (lastElement.equals("")) {
-                shiftRowAndInsert(lastRow, valueToShift);
+                shiftAllRow(lastRow, valueToShift);
             } else {
-                valueToShift = shiftRowAndInsert(lastRow, valueToShift);
+                valueToShift = shiftAllRow(lastRow, valueToShift);
                 addEmptyRowWithLogic(valueToShift);
             }
         }
