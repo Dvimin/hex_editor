@@ -141,7 +141,20 @@ public class BinTableModel extends AbstractTableModel {
         }
     }
 
+    public int[] getNextCell(int currentRow, int currentColumn) {
+        int lastRow = getRowCount() - 1;
+        int lastColumn = getColumnCount() - 1;
 
+        if (currentColumn == lastColumn) {
+            if (currentRow == lastRow) {
+                return new int[]{0, 0};
+            } else {
+                return new int[]{currentRow + 1, 0};
+            }
+        } else {
+            return new int[]{currentRow, currentColumn + 1};
+        }
+    }
 
 
     @Override

@@ -108,6 +108,38 @@ public class ButtonSetup {
         pasteWithShiftButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (copiedBlock != null) {
+                    int selectedRow = binTable.getSelectedRow();
+                    int selectedColumn = binTable.getSelectedColumn();
+
+                    if (selectedRow != -1 && selectedColumn != -1) {
+                        BinTableModel model = (BinTableModel) binTable.getModel();
+
+                        for (int i = 0; i < copiedBlock.length; i++) {
+                            for (int j = 0; j < copiedBlock[i].length; j++) {
+                                model.insertCellAndShift(selectedRow, selectedColumn);
+                            }
+                        }
+                        int[] nextCell = model.getNextCell(selectedRow, selectedColumn);
+                        selectedRow = nextCell[0];
+                        selectedColumn = nextCell[1];
+                        for (int i = 0; i < copiedBlock.length; i++) {
+                            for (int j = 0; j < copiedBlock[i].length; j++) {
+                                model.setValueAt(copiedBlock[i][j], selectedRow, selectedColumn);
+                                nextCell = model.getNextCell(selectedRow, selectedColumn);
+                                selectedRow = nextCell[0];
+                                selectedColumn = nextCell[1];
+                            }
+                        }
+
+                        binTable.repaint();
+                        binTable.changeSelection(selectedRow, selectedColumn, false, false);
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Сначала скопируйте блок", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
