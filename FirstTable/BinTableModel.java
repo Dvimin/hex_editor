@@ -145,7 +145,7 @@ public class BinTableModel extends AbstractTableModel {
             }
         }
     }
-
+    // для вставки пустой ячейки слева
     public void insertCellLeftAndShift(int selectedRow, int selectedColumn) {
         if (selectedRow == 0 && selectedColumn == 1) {
             insertCellRightAndShift(0, 0);
@@ -157,6 +157,7 @@ public class BinTableModel extends AbstractTableModel {
         insertCellRightAndShift(selectedRow, selectedColumn);
     }
 
+    //для удаления ячейки и последующего сдвига
     public String shiftAllRowLeft(int row, String element) {
         int columnCount = getColumnCount();
         String firstCellValue = getValueAt(row, 1).toString();
@@ -183,6 +184,17 @@ public class BinTableModel extends AbstractTableModel {
             fireTableDataChanged();
         }
     }
+
+    public void deleteCellAndShift(int selectedRow, int selectedColumn) {
+        int lastRow = getRowCount() - 1;
+        int lastColumn = getColumnCount() - 1;
+        String element = "";
+        for (int row = lastRow; row > selectedRow; row--){
+            element = shiftAllRowLeft(row, element);
+        }
+        shiftSelectedRowLeft(selectedRow, selectedColumn, element);
+    }
+
 
     public int[] getNextCell(int currentRow, int currentColumn) {
         int lastRow = getRowCount() - 1;

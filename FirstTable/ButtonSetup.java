@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 public class ButtonSetup {
 
@@ -15,7 +16,7 @@ public class ButtonSetup {
         JButton deleteButton = new JButton("Удалить");
         JButton pasteWithShiftLeftButton = new JButton("Вставить слева со сдвигом");
         JButton pasteWithShiftRightButton = new JButton("Вставить справа со сдвигом");
-        JButton copyBlockButton = new JButton("Копировать блок");
+        JButton copyBlockButton = new JButton("Копировать");
         JButton pasteWithoutShiftButton = new JButton("Вставить без сдвига");
         JButton clearButton = new JButton("Очистить данные");
         JButton insertCellRightButton = new JButton("Вставить ячейку справа");
@@ -72,12 +73,17 @@ public class ButtonSetup {
             public void actionPerformed(ActionEvent e) {
                 int[] selectedRows = binTable.getSelectedRows();
                 int[] selectedColumns = binTable.getSelectedColumns();
-                for (int row : selectedRows) {
-                    for (int column : selectedColumns) {
-                        btm.setValueAt("00", row, column);
+                BinTableModel model = (BinTableModel) binTable.getModel();
+                if (selectedRows.length > 0 && selectedColumns.length > 0) {
+                    for (int i = 0; i < selectedRows.length; i++) {
+                        for (int j = 0; j < selectedColumns.length; j++) {
+                            model.setValueAt("00", selectedRows[i], selectedColumns[j]);
+                        }
                     }
+                    binTable.repaint();
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
-                binTable.repaint();
             }
         });
 
@@ -87,10 +93,22 @@ public class ButtonSetup {
                 int[] selectedRows = binTable.getSelectedRows();
                 int[] selectedColumns = binTable.getSelectedColumns();
                 BinTableModel model = (BinTableModel) binTable.getModel();
-                model.shiftSelectedRowLeft(selectedRows[0], selectedColumns[0], "");
-                binTable.repaint();
+                if (selectedRows.length > 0 && selectedColumns.length > 0) {
+                    Arrays.sort(selectedRows);
+                    Arrays.sort(selectedColumns);
+                    for (int i = selectedRows.length - 1; i >= 0; i--) {
+                        for (int j = selectedColumns.length - 1; j >= 0; j--) {
+                                model.deleteCellAndShift(selectedRows[i], selectedColumns[j]);
+                        }
+                    }
+                    binTable.repaint();
+                    binTable.changeSelection(selectedRows[0], selectedColumns[0], false, false);
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
+
 
         copyBlockButton.addActionListener(new ActionListener() {
             @Override
