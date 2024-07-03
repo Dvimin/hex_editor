@@ -12,12 +12,13 @@ public class ButtonSetup {
 
     public static void setupButtons(JFrame frame, JTable binTable, BinTableModel btm) {
         JButton editButton = new JButton("Изменить");
-        JButton resetButton = new JButton("Обнулить");
+        JButton resetButton = new JButton("Сбросить");
         JButton deleteButton = new JButton("Удалить");
         JButton pasteWithShiftLeftButton = new JButton("Вставить слева со сдвигом");
         JButton pasteWithShiftRightButton = new JButton("Вставить справа со сдвигом");
         JButton copyBlockButton = new JButton("Копировать");
         JButton cutBlockWithShiftButton = new JButton("Вырезать со сдвигом");
+        JButton cutBlockWithResetButton = new JButton("Вырезать со сбросом");
         JButton pasteWithoutShiftButton = new JButton("Вставить без сдвига");
         JButton clearButton = new JButton("Очистить данные");
         JButton insertCellRightButton = new JButton("Вставить ячейку справа");
@@ -83,7 +84,7 @@ public class ButtonSetup {
                     }
                     binTable.repaint();
                 } else {
-                    JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку для обнуления.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -105,7 +106,7 @@ public class ButtonSetup {
                     binTable.repaint();
                     binTable.changeSelection(selectedRows[0], selectedColumns[0], false, false);
                 } else {
-                    JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку для удаления.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -116,6 +117,10 @@ public class ButtonSetup {
             public void actionPerformed(ActionEvent e) {
                 int[] selectedRows = binTable.getSelectedRows();
                 int[] selectedColumns = binTable.getSelectedColumns();
+                if (selectedRows.length == 0 || selectedColumns.length == 0) {
+                    JOptionPane.showMessageDialog(null, "Пожалуйста, выберите хотя бы одну ячейку для копирования.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 copiedBlock = new String[selectedRows.length][selectedColumns.length];
 
                 for (int i = 0; i < selectedRows.length; i++) {
@@ -152,6 +157,30 @@ public class ButtonSetup {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
 
+            }
+        });
+
+        cutBlockWithResetButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int[] selectedRows = binTable.getSelectedRows();
+                int[] selectedColumns = binTable.getSelectedColumns();
+                BinTableModel model = (BinTableModel) binTable.getModel();
+                copiedBlock = new String[selectedRows.length][selectedColumns.length];
+                if (selectedRows.length > 0 && selectedColumns.length > 0) {
+                    Arrays.sort(selectedRows);
+                    Arrays.sort(selectedColumns);
+                    for (int i = 0; i < selectedRows.length; i++) {
+                        for (int j = 0; j < selectedColumns.length; j++) {
+                            copiedBlock[i][j] = (String) btm.getValueAt(selectedRows[i], selectedColumns[j]);
+                            model.setValueAt("00", selectedRows[i], selectedColumns[j]);
+                        }
+                    }
+                    binTable.repaint();
+                    binTable.changeSelection(selectedRows[0], selectedColumns[0], false, false);
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
         pasteWithoutShiftButton.addActionListener(new ActionListener() {
@@ -253,7 +282,7 @@ public class ButtonSetup {
         });
 
         JPanel buttonPanel = new JPanel(new GridBagLayout());
-        Component[] components = {editButton, resetButton, deleteButton, copyBlockButton, cutBlockWithShiftButton, pasteWithoutShiftButton, pasteWithShiftLeftButton, pasteWithShiftRightButton, clearButton, insertCellLeftButton, insertCellRightButton};
+        Component[] components = {editButton, resetButton, deleteButton, copyBlockButton, cutBlockWithShiftButton, cutBlockWithResetButton, pasteWithoutShiftButton, pasteWithShiftLeftButton, pasteWithShiftRightButton, clearButton, insertCellLeftButton, insertCellRightButton};
         for (int i = 0; i < components.length; i++) {
             buttonPanel.add(components[i], new GridBagConstraints(i, 0, 1, 1, 1, 1,
                     GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
