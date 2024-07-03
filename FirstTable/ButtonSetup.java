@@ -1,4 +1,5 @@
 package FirstTable;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -10,7 +11,8 @@ public class ButtonSetup {
 
     public static void setupButtons(JFrame frame, JTable binTable, BinTableModel btm) {
         JButton editButton = new JButton("Изменить");
-        JButton deleteButton = new JButton("Обнулить");
+        JButton resetButton = new JButton("Обнулить");
+        JButton deleteButton = new JButton("Удалить");
         JButton pasteWithShiftLeftButton = new JButton("Вставить слева со сдвигом");
         JButton pasteWithShiftRightButton = new JButton("Вставить справа со сдвигом");
         JButton copyBlockButton = new JButton("Копировать блок");
@@ -18,6 +20,7 @@ public class ButtonSetup {
         JButton clearButton = new JButton("Очистить данные");
         JButton insertCellRightButton = new JButton("Вставить ячейку справа");
         JButton insertCellLeftButton = new JButton("Вставить ячейку слева");
+        binTable.changeSelection(0, 1, false, false);
 
         insertCellRightButton.addActionListener(new ActionListener() {
             @Override
@@ -49,8 +52,6 @@ public class ButtonSetup {
             }
         });
 
-
-
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -66,7 +67,7 @@ public class ButtonSetup {
             }
         });
 
-        deleteButton.addActionListener(new ActionListener() {
+        resetButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int[] selectedRows = binTable.getSelectedRows();
@@ -76,6 +77,17 @@ public class ButtonSetup {
                         btm.setValueAt("00", row, column);
                     }
                 }
+                binTable.repaint();
+            }
+        });
+
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int[] selectedRows = binTable.getSelectedRows();
+                int[] selectedColumns = binTable.getSelectedColumns();
+                BinTableModel model = (BinTableModel) binTable.getModel();
+                model.shiftSelectedRowLeft(selectedRows[0], selectedColumns[0], "");
                 binTable.repaint();
             }
         });
@@ -194,7 +206,7 @@ public class ButtonSetup {
         });
 
         JPanel buttonPanel = new JPanel(new GridBagLayout());
-        Component[] components = {editButton, deleteButton, copyBlockButton, pasteWithoutShiftButton, pasteWithShiftLeftButton, pasteWithShiftRightButton, clearButton, insertCellLeftButton, insertCellRightButton};
+        Component[] components = {editButton, resetButton, deleteButton, copyBlockButton, pasteWithoutShiftButton, pasteWithShiftLeftButton, pasteWithShiftRightButton, clearButton, insertCellLeftButton, insertCellRightButton};
         for (int i = 0; i < components.length; i++) {
             buttonPanel.add(components[i], new GridBagConstraints(i, 0, 1, 1, 1, 1,
                     GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,

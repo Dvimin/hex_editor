@@ -80,8 +80,16 @@ public class BinTableModel extends AbstractTableModel {
         fireTableRowsInserted(dataArrayList.size() - 1, dataArrayList.size() - 1);
     }
 
+    public void removeRow(int row) {
+        if (row >= 0 && row < dataArrayList.size()) {
+            dataArrayList.remove(row);
+            fireTableRowsDeleted(row, row);
+        }
+    }
+
+
     // Смещение целой строки вправо
-    public String shiftAllRow(int row, String element) {
+    public String shiftAllRowRight(int row, String element) {
         int columnCount = getColumnCount();
         String lastCellValue = getValueAt(row, columnCount - 1).toString();
 
@@ -97,7 +105,7 @@ public class BinTableModel extends AbstractTableModel {
     }
 
     // Смещение выбранной строки
-    public String shiftSelectedRow(int row, int column) {
+    public String shiftSelectedRowRight(int row, int column) {
         int columnCount = getColumnCount();
         if (column == columnCount - 1) {
             return "";
@@ -118,21 +126,21 @@ public class BinTableModel extends AbstractTableModel {
         if (selectedRow == lastRow) {
             String lastElement = (String) getValueAt(lastRow, lastColumn);
             if (lastElement.equals("") && selectedColumn != lastColumn) {
-                shiftSelectedRow(selectedRow, selectedColumn);
+                shiftSelectedRowRight(selectedRow, selectedColumn);
             } else {
-                String valueToShift = shiftSelectedRow(selectedRow, selectedColumn);
+                String valueToShift = shiftSelectedRowRight(selectedRow, selectedColumn);
                 addEmptyRowWithLogic(valueToShift);
             }
         } else {
-            String valueToShift = shiftSelectedRow(selectedRow, selectedColumn);
+            String valueToShift = shiftSelectedRowRight(selectedRow, selectedColumn);
             for (int i = selectedRow + 1; i < lastRow; i++) {
-                valueToShift = shiftAllRow(i, valueToShift);
+                valueToShift = shiftAllRowRight(i, valueToShift);
             }
             String lastElement = (String) getValueAt(lastRow, lastColumn);
             if (lastElement.equals("")) {
-                shiftAllRow(lastRow, valueToShift);
+                shiftAllRowRight(lastRow, valueToShift);
             } else {
-                valueToShift = shiftAllRow(lastRow, valueToShift);
+                valueToShift = shiftAllRowRight(lastRow, valueToShift);
                 addEmptyRowWithLogic(valueToShift);
             }
         }
@@ -147,6 +155,33 @@ public class BinTableModel extends AbstractTableModel {
         selectedRow = backCell[0];
         selectedColumn = backCell[1];
         insertCellRightAndShift(selectedRow, selectedColumn);
+    }
+
+    public String shiftAllRowLeft(int row, String element) {
+        int columnCount = getColumnCount();
+        String firstCellValue = getValueAt(row, 1).toString();
+
+        for (int j = 1; j < columnCount - 1; j++) {
+            String cellValue = getValueAt(row, j +1).toString();
+            setValueAt(cellValue, row, j);
+        }
+
+        setValueAt(element, row, columnCount - 1);
+
+        fireTableDataChanged();
+        return firstCellValue;
+    }
+
+    public void shiftSelectedRowLeft(int row, int column, String element) {
+        int columnCount = getColumnCount();
+        if (column > 0) {
+            for (int j = column; j < columnCount - 1; j++) {
+                setValueAt(getValueAt(row, j + 1), row, j);
+            }
+            setValueAt(element, row, columnCount - 1);
+
+            fireTableDataChanged();
+        }
     }
 
     public int[] getNextCell(int currentRow, int currentColumn) {
