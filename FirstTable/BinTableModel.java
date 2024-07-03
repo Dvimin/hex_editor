@@ -120,7 +120,7 @@ public class BinTableModel extends AbstractTableModel {
         int lastColumn = getColumnCount() - 1;
         if (selectedRow == lastRow) {
             String lastElement = (String) getValueAt(lastRow, lastColumn);
-            if (lastElement.equals("")) {
+            if (lastElement.equals("") && selectedColumn != lastColumn) {
                 shiftSelectedRow(selectedRow, selectedColumn);
             } else {
                 String valueToShift = shiftSelectedRow(selectedRow, selectedColumn);
@@ -147,12 +147,26 @@ public class BinTableModel extends AbstractTableModel {
 
         if (currentColumn == lastColumn) {
             if (currentRow == lastRow) {
-                return new int[]{0, 0};
+                return new int[]{0, 1};
             } else {
-                return new int[]{currentRow + 1, 0};
+                return new int[]{currentRow + 1, 1};
             }
         } else {
             return new int[]{currentRow, currentColumn + 1};
+        }
+    }
+
+    public int[] getBackCell(int currentRow, int currentColumn) {
+        int lastRow = getRowCount() - 1;
+        int lastColumn = getColumnCount() - 1;
+        if (currentColumn == 1) {
+            if (currentRow == 0) {
+                return new int[]{lastRow, lastColumn};
+            } else {
+                return new int[]{currentRow - 1, lastColumn};
+            }
+        } else {
+            return new int[]{currentRow, currentColumn - 1};
         }
     }
 

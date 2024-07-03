@@ -12,7 +12,8 @@ public class ButtonSetup {
     public static void setupButtons(JFrame frame, JTable binTable, BinTableModel btm) {
         JButton editButton = new JButton("Изменить");
         JButton deleteButton = new JButton("Обнулить");
-        JButton pasteWithShiftButton = new JButton("Вставить со сдвигом");
+        JButton pasteWithShiftLeftButton = new JButton("Вставить слева со сдвигом");
+        JButton pasteWithShiftRightButton = new JButton("Вставить справа со сдвигом");
         JButton copyBlockButton = new JButton("Копировать блок");
         JButton pasteWithoutShiftButton = new JButton("Вставить без сдвига");
         JButton clearButton = new JButton("Очистить данные");
@@ -105,7 +106,7 @@ public class ButtonSetup {
             }
         });
 
-        pasteWithShiftButton.addActionListener(new ActionListener() {
+        pasteWithShiftRightButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (copiedBlock != null) {
@@ -118,20 +119,12 @@ public class ButtonSetup {
                         for (int i = 0; i < copiedBlock.length; i++) {
                             for (int j = 0; j < copiedBlock[i].length; j++) {
                                 model.insertCellAndShift(selectedRow, selectedColumn);
-                            }
-                        }
-                        int[] nextCell = model.getNextCell(selectedRow, selectedColumn);
-                        selectedRow = nextCell[0];
-                        selectedColumn = nextCell[1];
-                        for (int i = 0; i < copiedBlock.length; i++) {
-                            for (int j = 0; j < copiedBlock[i].length; j++) {
-                                model.setValueAt(copiedBlock[i][j], selectedRow, selectedColumn);
-                                nextCell = model.getNextCell(selectedRow, selectedColumn);
+                                int[] nextCell = model.getNextCell(selectedRow, selectedColumn);
                                 selectedRow = nextCell[0];
                                 selectedColumn = nextCell[1];
+                                model.setValueAt(copiedBlock[i][j], selectedRow, selectedColumn);
                             }
                         }
-
                         binTable.repaint();
                         binTable.changeSelection(selectedRow, selectedColumn, false, false);
                     } else {
@@ -158,7 +151,7 @@ public class ButtonSetup {
         });
 
         JPanel buttonPanel = new JPanel(new GridBagLayout());
-        Component[] components = {editButton, deleteButton, copyBlockButton, pasteWithoutShiftButton, pasteWithShiftButton, clearButton, insertCellButton};
+        Component[] components = {editButton, deleteButton, copyBlockButton, pasteWithoutShiftButton, pasteWithShiftRightButton, clearButton, insertCellButton};
         for (int i = 0; i < components.length; i++) {
             buttonPanel.add(components[i], new GridBagConstraints(i, 0, 1, 1, 1, 1,
                     GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
