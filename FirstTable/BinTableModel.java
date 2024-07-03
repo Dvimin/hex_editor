@@ -103,9 +103,6 @@ public class BinTableModel extends AbstractTableModel {
             return "";
         }
         String lastCellValue = getValueAt(row, columnCount - 1).toString();
-//        if (row == getRowCount() && lastCellValue == ""){
-//
-//        }
         for (int j = columnCount - 2; j > column; j--) {
             String cellValue = getValueAt(row, j).toString();
             setValueAt(cellValue, row, j + 1);
@@ -115,7 +112,7 @@ public class BinTableModel extends AbstractTableModel {
         return lastCellValue;
     }
 
-    public void insertCellAndShift(int selectedRow, int selectedColumn) {
+    public void insertCellRightAndShift(int selectedRow, int selectedColumn) {
         int lastRow = getRowCount() - 1;
         int lastColumn = getColumnCount() - 1;
         if (selectedRow == lastRow) {
@@ -139,6 +136,17 @@ public class BinTableModel extends AbstractTableModel {
                 addEmptyRowWithLogic(valueToShift);
             }
         }
+    }
+
+    public void insertCellLeftAndShift(int selectedRow, int selectedColumn) {
+        if (selectedRow == 0 && selectedColumn == 1) {
+            insertCellRightAndShift(0, 0);
+            return;
+        }
+        int[] backCell = getBackCell(selectedRow, selectedColumn);
+        selectedRow = backCell[0];
+        selectedColumn = backCell[1];
+        insertCellRightAndShift(selectedRow, selectedColumn);
     }
 
     public int[] getNextCell(int currentRow, int currentColumn) {

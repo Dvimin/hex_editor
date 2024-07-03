@@ -3,7 +3,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
 
 public class ButtonSetup {
 
@@ -17,15 +16,16 @@ public class ButtonSetup {
         JButton copyBlockButton = new JButton("Копировать блок");
         JButton pasteWithoutShiftButton = new JButton("Вставить без сдвига");
         JButton clearButton = new JButton("Очистить данные");
-        JButton insertCellButton = new JButton("Вставить ячейку справа");
+        JButton insertCellRightButton = new JButton("Вставить ячейку справа");
+        JButton insertCellLeftButton = new JButton("Вставить ячейку слева");
 
-        insertCellButton.addActionListener(new ActionListener() {
+        insertCellRightButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = binTable.getSelectedRow();
                 int selectedColumn = binTable.getSelectedColumn();
                 if (selectedRow != -1 && selectedColumn != -1) {
-                    ((BinTableModel) binTable.getModel()).insertCellAndShift(selectedRow, selectedColumn);
+                    ((BinTableModel) binTable.getModel()).insertCellRightAndShift(selectedRow, selectedColumn);
                     binTable.repaint();
                     binTable.changeSelection(selectedRow, selectedColumn, false, false);
                 } else {
@@ -33,6 +33,22 @@ public class ButtonSetup {
                 }
             }
         });
+
+        insertCellLeftButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = binTable.getSelectedRow();
+                int selectedColumn = binTable.getSelectedColumn();
+                if (selectedRow != -1 && selectedColumn != -1) {
+                    ((BinTableModel) binTable.getModel()).insertCellLeftAndShift(selectedRow, selectedColumn);
+                    binTable.repaint();
+                    binTable.changeSelection(selectedRow, selectedColumn, false, false);
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
 
 
         editButton.addActionListener(new ActionListener() {
@@ -118,10 +134,37 @@ public class ButtonSetup {
 
                         for (int i = 0; i < copiedBlock.length; i++) {
                             for (int j = 0; j < copiedBlock[i].length; j++) {
-                                model.insertCellAndShift(selectedRow, selectedColumn);
+                                model.insertCellRightAndShift(selectedRow, selectedColumn);
                                 int[] nextCell = model.getNextCell(selectedRow, selectedColumn);
                                 selectedRow = nextCell[0];
                                 selectedColumn = nextCell[1];
+                                model.setValueAt(copiedBlock[i][j], selectedRow, selectedColumn);
+                            }
+                        }
+                        binTable.repaint();
+                        binTable.changeSelection(selectedRow, selectedColumn, false, false);
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Сначала скопируйте блок", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        pasteWithShiftLeftButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (copiedBlock != null) {
+                    int selectedRow = binTable.getSelectedRow();
+                    int selectedColumn = binTable.getSelectedColumn();
+
+                    if (selectedRow != -1 && selectedColumn != -1) {
+                        BinTableModel model = (BinTableModel) binTable.getModel();
+
+                        for (int i = copiedBlock.length - 1; i >= 0; i--) {
+                            for (int j = copiedBlock[i].length - 1; j >= 0; j--) {
+                                model.insertCellLeftAndShift(selectedRow, selectedColumn);
                                 model.setValueAt(copiedBlock[i][j], selectedRow, selectedColumn);
                             }
                         }
@@ -151,7 +194,7 @@ public class ButtonSetup {
         });
 
         JPanel buttonPanel = new JPanel(new GridBagLayout());
-        Component[] components = {editButton, deleteButton, copyBlockButton, pasteWithoutShiftButton, pasteWithShiftRightButton, clearButton, insertCellButton};
+        Component[] components = {editButton, deleteButton, copyBlockButton, pasteWithoutShiftButton, pasteWithShiftLeftButton, pasteWithShiftRightButton, clearButton, insertCellLeftButton, insertCellRightButton};
         for (int i = 0; i < components.length; i++) {
             buttonPanel.add(components[i], new GridBagConstraints(i, 0, 1, 1, 1, 1,
                     GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
