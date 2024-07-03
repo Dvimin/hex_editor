@@ -45,9 +45,13 @@ public class ButtonSetup {
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = binTable.getSelectedRow();
                 int selectedColumn = binTable.getSelectedColumn();
+                BinTableModel model = (BinTableModel) binTable.getModel();
                 if (selectedRow != -1 && selectedColumn != -1) {
                     ((BinTableModel) binTable.getModel()).insertCellLeftAndShift(selectedRow, selectedColumn);
                     binTable.repaint();
+                    int[] nextCell = model.getNextCell(selectedRow, selectedColumn);
+                    selectedRow = nextCell[0];
+                    selectedColumn = nextCell[1];
                     binTable.changeSelection(selectedRow, selectedColumn, false, false);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
