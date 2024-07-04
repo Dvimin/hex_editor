@@ -25,13 +25,18 @@ public class ButtonSetup {
         JButton insertCellLeftButton = new JButton("Вставить ячейку слева");
         binTable.changeSelection(0, 1, false, false);
 
+        JComboBox<Integer> insertCellRightComboBox = new JComboBox<>(new Integer[] {1, 2, 4, 8});
+
         insertCellRightButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = binTable.getSelectedRow();
                 int selectedColumn = binTable.getSelectedColumn();
                 if (selectedRow != -1 && selectedColumn != -1) {
-                    ((BinTableModel) binTable.getModel()).insertCellRightAndShift(selectedRow, selectedColumn);
+                    int numberOfCells = (int) insertCellRightComboBox.getSelectedItem();
+                    for (int i = 0; i < numberOfCells; i++) {
+                        ((BinTableModel) binTable.getModel()).insertCellRightAndShift(selectedRow, selectedColumn);
+                    }
                     binTable.repaint();
                     binTable.changeSelection(selectedRow, selectedColumn, false, false);
                 } else {
@@ -40,6 +45,8 @@ public class ButtonSetup {
             }
         });
 
+        JComboBox<Integer> insertCellLeftComboBox = new JComboBox<>(new Integer[] {1, 2, 4, 8});
+
         insertCellLeftButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -47,11 +54,16 @@ public class ButtonSetup {
                 int selectedColumn = binTable.getSelectedColumn();
                 BinTableModel model = (BinTableModel) binTable.getModel();
                 if (selectedRow != -1 && selectedColumn != -1) {
-                    ((BinTableModel) binTable.getModel()).insertCellLeftAndShift(selectedRow, selectedColumn);
+                    int numberOfCells = (int) insertCellLeftComboBox.getSelectedItem();
+
+                    for (int i = 0; i < numberOfCells; i++) {
+                        model.insertCellLeftAndShift(selectedRow, selectedColumn);
+                        int[] nextCell = model.getNextCell(selectedRow, selectedColumn);
+                        selectedRow = nextCell[0];
+                        selectedColumn = nextCell[1];
+                    }
+
                     binTable.repaint();
-                    int[] nextCell = model.getNextCell(selectedRow, selectedColumn);
-                    selectedRow = nextCell[0];
-                    selectedColumn = nextCell[1];
                     binTable.changeSelection(selectedRow, selectedColumn, false, false);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
@@ -285,15 +297,20 @@ public class ButtonSetup {
             }
         });
 
+
+
         JPanel buttonPanel = new JPanel(new GridBagLayout());
-        Component[] components = {editButton, resetButton, deleteButton, copyBlockButton, cutBlockWithShiftButton, cutBlockWithResetButton, pasteWithoutShiftButton, pasteWithShiftLeftButton, pasteWithShiftRightButton, clearButton, insertCellLeftButton, insertCellRightButton};
+        Component[] components = {editButton, resetButton, deleteButton, copyBlockButton, cutBlockWithShiftButton,
+                cutBlockWithResetButton, pasteWithoutShiftButton, pasteWithShiftLeftButton, pasteWithShiftRightButton,
+                clearButton, insertCellLeftComboBox, insertCellLeftButton, insertCellRightComboBox, insertCellRightButton};
         for (int i = 0; i < components.length; i++) {
-            buttonPanel.add(components[i], new GridBagConstraints(i, 0, 1, 1, 1, 1,
-                    GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
+            buttonPanel.add(components[i], new GridBagConstraints(0, i, 1, 1, 1, 1,
+                    GridBagConstraints.EAST, GridBagConstraints.VERTICAL,
                     new Insets(1, 1, 1, 1), 0, 0));
         }
-        frame.add(buttonPanel, new GridBagConstraints(0, 1, 5, 1, 1, 0,
-                GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL,
+        frame.add(buttonPanel, new GridBagConstraints(4, 1, 1, 1, 0, 0,
+                GridBagConstraints.EAST, GridBagConstraints.VERTICAL,
                 new Insets(1, 1, 1, 1), 0, 0));
+
     }
 }
