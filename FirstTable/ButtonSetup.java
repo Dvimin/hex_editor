@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class ButtonSetup {
@@ -340,24 +341,22 @@ public class ButtonSetup {
             }
         });
 
-        JTextField searchField = new JTextField(10);
-
         byteSearchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String searchText = searchField.getText();
-                int rowCount = binTable.getRowCount();
-                int colCount = binTable.getColumnCount();
-                for (int row = 0; row < rowCount; row++) {
-                    for (int col = 0; col < colCount; col++) {
-                        Object value = binTable.getValueAt(row, col);
-                        if (value != null && value.toString().equals(searchText)) {
-                            binTable.changeSelection(row, col, false, false);
-                            return;
-                        }
-                    }
-                }
-                JOptionPane.showMessageDialog(null, "Ячейка не найдена", "Результат поиска", JOptionPane.INFORMATION_MESSAGE);
+                JFrame searchWindow = new JFrame("Поиск в таблице");
+                JPanel searchPanel = new JPanel(new BorderLayout());
+                JPanel inputPanel = ButtonUtils.createInputPanel();
+                JPanel buttonPanel = ButtonUtils.createButtonPanel(inputPanel);
+                searchPanel.add(inputPanel, BorderLayout.NORTH);
+                searchPanel.add(buttonPanel, BorderLayout.CENTER);
+
+                JScrollPane scrollPane = new JScrollPane(searchPanel);
+                scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+                searchWindow.add(scrollPane);
+                searchWindow.pack();
+                searchWindow.setLocationRelativeTo(null);
+                searchWindow.setVisible(true);
             }
         });
 
@@ -366,7 +365,7 @@ public class ButtonSetup {
         JPanel buttonPanel = new JPanel(new GridBagLayout());
         Component[] components = {editButton, resetButton, deleteButton, copyBlockButton, cutBlockWithShiftButton,
                 cutBlockWithResetButton, pasteWithoutShiftButton, pasteWithShiftLeftButton, pasteWithShiftRightButton,
-                clearButton, insertCellLeftComboBox, insertCellLeftButton, insertCellRightComboBox, insertCellRightButton, searchField, byteSearchButton};
+                clearButton, insertCellLeftComboBox, insertCellLeftButton, insertCellRightComboBox, insertCellRightButton, byteSearchButton};
         for (int i = 0; i < components.length; i++) {
             buttonPanel.add(components[i], new GridBagConstraints(0, i, 1, 1, 1, 1,
                     GridBagConstraints.EAST, GridBagConstraints.VERTICAL,
