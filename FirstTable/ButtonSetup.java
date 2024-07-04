@@ -23,6 +23,7 @@ public class ButtonSetup {
         JButton clearButton = new JButton("Очистить данные");
         JButton insertCellRightButton = new JButton("Вставить ячейку справа");
         JButton insertCellLeftButton = new JButton("Вставить ячейку слева");
+        JButton byteSearchButton = new JButton("Найти");
         binTable.changeSelection(0, 1, false, false);
 
         JComboBox<Integer> insertCellRightComboBox = new JComboBox<>(new Integer[] {1, 2, 4, 8});
@@ -339,12 +340,33 @@ public class ButtonSetup {
             }
         });
 
+        JTextField searchField = new JTextField(10);
+
+        byteSearchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String searchText = searchField.getText();
+                int rowCount = binTable.getRowCount();
+                int colCount = binTable.getColumnCount();
+                for (int row = 0; row < rowCount; row++) {
+                    for (int col = 0; col < colCount; col++) {
+                        Object value = binTable.getValueAt(row, col);
+                        if (value != null && value.toString().equals(searchText)) {
+                            binTable.changeSelection(row, col, false, false);
+                            return;
+                        }
+                    }
+                }
+                JOptionPane.showMessageDialog(null, "Ячейка не найдена", "Результат поиска", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
 
 
         JPanel buttonPanel = new JPanel(new GridBagLayout());
         Component[] components = {editButton, resetButton, deleteButton, copyBlockButton, cutBlockWithShiftButton,
                 cutBlockWithResetButton, pasteWithoutShiftButton, pasteWithShiftLeftButton, pasteWithShiftRightButton,
-                clearButton, insertCellLeftComboBox, insertCellLeftButton, insertCellRightComboBox, insertCellRightButton};
+                clearButton, insertCellLeftComboBox, insertCellLeftButton, insertCellRightComboBox, insertCellRightButton, searchField, byteSearchButton};
         for (int i = 0; i < components.length; i++) {
             buttonPanel.add(components[i], new GridBagConstraints(0, i, 1, 1, 1, 1,
                     GridBagConstraints.EAST, GridBagConstraints.VERTICAL,
