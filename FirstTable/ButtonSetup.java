@@ -91,29 +91,91 @@ public class ButtonSetup {
 
         JComboBox<Integer> insertCellLeftComboBox = new JComboBox<>(new Integer[] {1, 2, 4, 8});
 
+//        insertCellLeftButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                int selectedRow = binTable.getSelectedRow();
+//                int selectedColumn = binTable.getSelectedColumn();
+//                BinTableModel model = (BinTableModel) binTable.getModel();
+//                if (selectedRow != -1 && selectedColumn != -1) {
+//                    int numberOfCells = (int) insertCellLeftComboBox.getSelectedItem();
+//
+//                    for (int i = 0; i < numberOfCells; i++) {
+//                        model.insertCellLeftAndShift(selectedRow, selectedColumn);
+//                        int[] nextCell = model.getNextCell(selectedRow, selectedColumn);
+//                        selectedRow = nextCell[0];
+//                        selectedColumn = nextCell[1];
+//                    }
+//
+//                    binTable.repaint();
+//                    binTable.changeSelection(selectedRow, selectedColumn, false, false);
+//                } else {
+//                    JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+//                }
+//            }
+//        });
+
         insertCellLeftButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = binTable.getSelectedRow();
                 int selectedColumn = binTable.getSelectedColumn();
-                BinTableModel model = (BinTableModel) binTable.getModel();
                 if (selectedRow != -1 && selectedColumn != -1) {
                     int numberOfCells = (int) insertCellLeftComboBox.getSelectedItem();
+                    JDialog dialog = new JDialog(frame, "Введите значения", true);
+                    dialog.setLayout(new FlowLayout());
+                    dialog.setLocationRelativeTo(null);
 
+                    JTextField[] textFields = new JTextField[numberOfCells];
                     for (int i = 0; i < numberOfCells; i++) {
-                        model.insertCellLeftAndShift(selectedRow, selectedColumn);
-                        int[] nextCell = model.getNextCell(selectedRow, selectedColumn);
-                        selectedRow = nextCell[0];
-                        selectedColumn = nextCell[1];
+                        textFields[i] = new JTextField(2);
+                        dialog.add(textFields[i]);
+                        textFields[i].setInputVerifier(new InputVerifier() {
+                            @Override
+                            public boolean verify(JComponent input) {
+                                JTextField textField = (JTextField) input;
+                                String value = textField.getText();atus
+                                if (value.isEmpty()) {
+                                    return true;
+                                }
+                                if (!value.matches("[0-9A-F]{2}")) {
+                                    JOptionPane.showMessageDialog(null, "Ошибка: введите двузначное число в формате 16-ричной системы (0-9, A-F).", "Ошибка ввода", JOptionPane.ERROR_MESSAGE);
+                                    return false;
+                                }
+                                return true;
+                            }
+                        });
                     }
 
-                    binTable.repaint();
-                    binTable.changeSelection(selectedRow, selectedColumn, false, false);
+                    JButton insertButton = new JButton("Вставить");
+                    insertButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            BinTableModel model = (BinTableModel) binTable.getModel();
+                            int nextRow = selectedRow;
+                            int nextColumn = selectedColumn;
+                            for (int i = numberOfCells - 1; i >= 0; i--) {
+                                String value = textFields[i].getText();
+                                model.insertCellLeftAndShift(nextRow, nextColumn);
+                                model.setValueAt(value, nextRow, nextColumn);
+                            }
+
+                            binTable.repaint();
+                            binTable.changeSelection(selectedRow, selectedColumn, false, false);
+                            dialog.dispose();
+                        }
+                    });
+
+                    dialog.add(insertButton);
+                    dialog.setSize(300, 100);
+                    dialog.setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
+
+
 
         editButton.addActionListener(new ActionListener() {
             @Override
