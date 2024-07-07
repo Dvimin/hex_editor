@@ -20,11 +20,11 @@ public class TableSetup {
                 if (rowIndex > -1 && colIndex > -1 && isCellSelected(rowIndex, colIndex)) {
                     int[] selectedRows = getSelectedRows();
                     int[] selectedColumns = getSelectedColumns();
-                    if (selectedColumns.length != 1 && selectedColumns.length != 2 && selectedColumns.length != 4 && selectedColumns.length != 8){
+                    if (selectedColumns.length != 1 && selectedColumns.length != 2 && selectedColumns.length != 4 && selectedColumns.length != 8) {
                         return "Error";
                     }
                     StringBuilder tooltipUnsigned = new StringBuilder("int без знака:");
-                    StringBuilder tooltipSigned =   new StringBuilder("int со знаком:");
+                    StringBuilder tooltipSigned = new StringBuilder("int со знаком:");
 
                     for (int row : selectedRows) {
                         for (int column : selectedColumns) {
@@ -48,7 +48,7 @@ public class TableSetup {
             }
         };
 
-        Border border = BorderFactory.createLineBorder(new Color(0,0,0,0), 0);
+        Border border = BorderFactory.createLineBorder(new Color(0, 0, 0, 0), 0);
         UIManager.put("Table.focusCellHighlightBorder", border);
 
         binTable.getTableHeader().setReorderingAllowed(false);
@@ -59,12 +59,12 @@ public class TableSetup {
         binTable.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 
         ButtonSetup buttonSetup = new ButtonSetup();
-        buttonSetup.setupButtons(frame, binTable, btm);
+        JPanel buttonPanel = buttonSetup.setupButtons(frame, binTable, btm);
 
         binTable.getSelectionModel().addListSelectionListener(new CustomSelectionListener(binTable));
         binTable.setGridColor(Color.WHITE);
         binTable.getColumnModel().getColumn(0).setCellRenderer(new RendererNameRow());
-        for (int i = 1; i <binTable.getColumnCount(); i++){
+        for (int i = 1; i < binTable.getColumnCount(); i++) {
             binTable.getColumnModel().getColumn(i).setCellRenderer(new OtherColumnsRenderer());
         }
 
@@ -87,25 +87,31 @@ public class TableSetup {
             }
         });
 
-        JScrollPane binTableScroolPage = new JScrollPane(binTable);
-        binTable.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
+        JScrollPane binTableScrollPage = new JScrollPane(binTable);
+        binTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         TableColumn column = null;
         column = binTable.getColumnModel().getColumn(0);
         column.setPreferredWidth(80);
-        for (int i = 1; i < binTable.getColumnCount(); i ++) {
+        for (int i = 1; i < binTable.getColumnCount(); i++) {
             column = binTable.getColumnModel().getColumn(i);
-            if ((i)%4 == 0) {
+            if (i % 4 == 0) {
                 column.setPreferredWidth(50);
             } else {
                 column.setPreferredWidth(30);
             }
         }
 
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(binTableScroolPage, BorderLayout.CENTER);
-        frame.add(panel, new GridBagConstraints(0, 0, 5, 1, 1, 1,
-                GridBagConstraints.NORTH, GridBagConstraints.BOTH,
-                new Insets(1, 1, 1, 1), 0, 0));
+        JPanel leftPanel = new JPanel(new BorderLayout());
+        leftPanel.add(binTableScrollPage, BorderLayout.CENTER);
+
+        JPanel rightPanel = new JPanel(new BorderLayout());
+        rightPanel.add(buttonPanel, BorderLayout.NORTH);
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
+        splitPane.setDividerLocation(500);
+
+        frame.getContentPane().setLayout(new BorderLayout());
+        frame.getContentPane().add(splitPane, BorderLayout.CENTER);
     }
 }

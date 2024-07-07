@@ -11,7 +11,7 @@ public class ButtonSetup {
 
     private static String[][] copiedBlock;
 
-    public static void setupButtons(JFrame frame, JTable binTable, BinTableModel btm) {
+    public static JPanel setupButtons(JFrame frame, JTable binTable, BinTableModel btm) {
         JButton editButton = new JButton("Изменить");
         JButton resetButton = new JButton("Сбросить");
         JButton deleteButton = new JButton("Удалить");
@@ -27,7 +27,7 @@ public class ButtonSetup {
         JButton byteSearchButton = new JButton("Найти");
         binTable.changeSelection(0, 1, false, false);
 
-        JComboBox<Integer> insertCellRightComboBox = new JComboBox<>(new Integer[] {1, 2, 4, 8});
+        JComboBox<Integer> insertCellRightComboBox = new JComboBox<>(new Integer[]{1, 2, 4, 8});
 
         insertCellRightButton.addActionListener(new ActionListener() {
             @Override
@@ -89,31 +89,7 @@ public class ButtonSetup {
             }
         });
 
-        JComboBox<Integer> insertCellLeftComboBox = new JComboBox<>(new Integer[] {1, 2, 4, 8});
-
-//        insertCellLeftButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                int selectedRow = binTable.getSelectedRow();
-//                int selectedColumn = binTable.getSelectedColumn();
-//                BinTableModel model = (BinTableModel) binTable.getModel();
-//                if (selectedRow != -1 && selectedColumn != -1) {
-//                    int numberOfCells = (int) insertCellLeftComboBox.getSelectedItem();
-//
-//                    for (int i = 0; i < numberOfCells; i++) {
-//                        model.insertCellLeftAndShift(selectedRow, selectedColumn);
-//                        int[] nextCell = model.getNextCell(selectedRow, selectedColumn);
-//                        selectedRow = nextCell[0];
-//                        selectedColumn = nextCell[1];
-//                    }
-//
-//                    binTable.repaint();
-//                    binTable.changeSelection(selectedRow, selectedColumn, false, false);
-//                } else {
-//                    JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
-//                }
-//            }
-//        });
+        JComboBox<Integer> insertCellLeftComboBox = new JComboBox<>(new Integer[]{1, 2, 4, 8});
 
         insertCellLeftButton.addActionListener(new ActionListener() {
             @Override
@@ -134,7 +110,7 @@ public class ButtonSetup {
                             @Override
                             public boolean verify(JComponent input) {
                                 JTextField textField = (JTextField) input;
-                                String value = textField.getText();atus
+                                String value = textField.getText();
                                 if (value.isEmpty()) {
                                     return true;
                                 }
@@ -174,8 +150,6 @@ public class ButtonSetup {
                 }
             }
         });
-
-
 
         editButton.addActionListener(new ActionListener() {
             @Override
@@ -222,7 +196,7 @@ public class ButtonSetup {
                     Arrays.sort(selectedColumns);
                     for (int i = selectedRows.length - 1; i >= 0; i--) {
                         for (int j = selectedColumns.length - 1; j >= 0; j--) {
-                                model.deleteCellAndShift(selectedRows[i], selectedColumns[j]);
+                            model.deleteCellAndShift(selectedRows[i], selectedColumns[j]);
                         }
                     }
                     binTable.repaint();
@@ -232,7 +206,6 @@ public class ButtonSetup {
                 }
             }
         });
-
 
         copyBlockButton.addActionListener(new ActionListener() {
             @Override
@@ -305,6 +278,7 @@ public class ButtonSetup {
                 }
             }
         });
+
         pasteWithoutShiftButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -423,19 +397,21 @@ public class ButtonSetup {
         });
 
 
-
         JPanel buttonPanel = new JPanel(new GridBagLayout());
-        Component[] components = {editButton, resetButton, deleteButton, copyBlockButton, cutBlockWithShiftButton,
-                cutBlockWithResetButton, pasteWithoutShiftButton, pasteWithShiftLeftButton, pasteWithShiftRightButton,
-                clearButton, insertCellLeftComboBox, insertCellLeftButton, insertCellRightComboBox, insertCellRightButton, byteSearchButton};
-        for (int i = 0; i < components.length; i++) {
-            buttonPanel.add(components[i], new GridBagConstraints(0, i, 1, 1, 1, 1,
-                    GridBagConstraints.EAST, GridBagConstraints.VERTICAL,
-                    new Insets(1, 1, 1, 1), 0, 0));
-        }
-        frame.add(buttonPanel, new GridBagConstraints(4, 1, 1, 1, 0, 0,
-                GridBagConstraints.EAST, GridBagConstraints.VERTICAL,
-                new Insets(1, 1, 1, 1), 0, 0));
+        Component[] components = {editButton, resetButton, copyBlockButton, deleteButton, pasteWithoutShiftButton, byteSearchButton, cutBlockWithShiftButton,
+                cutBlockWithResetButton,  pasteWithShiftLeftButton, pasteWithShiftRightButton,
+                insertCellLeftComboBox, insertCellLeftButton, insertCellRightComboBox, insertCellRightButton, clearButton};
 
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(1, 1, 1, 1);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        for (int i = 0; i < components.length; i++) {
+            gbc.gridx = i % 2;
+            gbc.gridy = i / 2;
+            buttonPanel.add(components[i], gbc);
+        }
+
+        return buttonPanel;
     }
 }
