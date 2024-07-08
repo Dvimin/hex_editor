@@ -402,8 +402,7 @@ public class ButtonSetup {
 
         JPanel buttonPanel = new JPanel(new GridBagLayout());
         Component[] components = {editButton, resetButton, copyBlockButton, deleteButton, pasteWithoutShiftButton, byteSearchButton, cutBlockWithShiftButton,
-                cutBlockWithResetButton,  pasteWithShiftLeftButton, pasteWithShiftRightButton,
-                insertCellLeftComboBox, insertCellLeftButton, insertCellRightComboBox, insertCellRightButton, clearButton};
+                cutBlockWithResetButton,  pasteWithShiftLeftButton, pasteWithShiftRightButton, insertCellLeftButton, insertCellLeftComboBox, insertCellRightButton, insertCellRightComboBox, clearButton};
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(1, 1, 1, 1);

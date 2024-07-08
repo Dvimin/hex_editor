@@ -17,6 +17,7 @@ public class ButtonUtils {
     }
 
     public static JPanel createInputPanel() {
+        searchFields.clear();
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JTextField searchField = new JTextField(2);
         searchFields.add(searchField);
@@ -57,10 +58,10 @@ public class ButtonUtils {
         findButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String[] searchBytes = new String[searchFields.size()];
+                String[] searchByte = new String[searchFields.size()];
                 for (int i = 0; i < searchFields.size(); i++) {
                     String value = searchFields.get(i).getText();
-                    searchBytes[i] = value;
+                    searchByte[i] = value;
                 }
                 int startRow = binTable.getSelectedRow();
                 int startColumn = binTable.getSelectedColumn();
@@ -72,13 +73,12 @@ public class ButtonUtils {
                     startRow = nextCell[0];
                     startColumn = nextCell[1];
                 }
-                int[] foundCoordinates = byteSearch.searchBytes(startRow, startColumn, searchBytes, true);
-                if (foundCoordinates == null) {
-                    System.out.println("Совпадений не найдено");
-                } else {
-                    int foundRow = foundCoordinates[0];
-                    int foundColumn = foundCoordinates[1];
-                    System.out.println("Найдено совпадение в строке: " + foundRow + ", столбце: " + foundColumn);
+                int[] foundCoordinates = byteSearch.searchBytes(startRow, startColumn, searchByte, true);
+                int foundRow = foundCoordinates[0];
+                int foundColumn = foundCoordinates[1];
+                if (foundRow == -1 && foundColumn == -1) {
+                    JOptionPane.showMessageDialog(null, "Совпадений не найдено", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }  else {
                     binTable.changeSelection(foundRow, foundColumn, false, false);
                 }
             }

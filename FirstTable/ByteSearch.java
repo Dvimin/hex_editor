@@ -1,7 +1,7 @@
 package FirstTable;
+
 import javax.swing.JTable;
-import java.util.List;
-import java.util.ArrayList;
+
 public class ByteSearch {
 
     private BinTableModel bintable;
@@ -15,43 +15,58 @@ public class ByteSearch {
         int columnCount = bintable.getColumnCount();
         int sequenceLength = sequence.length;
 
-        for (int row = startRow; row < rowCount; row++) {
-            for (int column = (row == startRow ? startColumn : 1); column < columnCount; column++) {
-                boolean match = true;
-                int currentRow = row;
-                int currentColumn = column;
+        int currentRow = startRow;
+        int currentColumn = startColumn;
+        boolean firstPass = true;
+        while (true) {
+            for (int row = currentRow; row < rowCount; row++) {
+                for (int column = (row == currentRow ? currentColumn : 0); column < columnCount; column++) {
+                    boolean match = true;
+                    int tempRow = row;
+                    int tempColumn = column;
 
-                for (int seqIndex = 0; seqIndex < sequenceLength; seqIndex++) {
-                    Object cellValue = bintable.getValueAt(currentRow, currentColumn);
+                    for (int seqIndex = 0; seqIndex < sequenceLength; seqIndex++) {
+                        Object cellValue = bintable.getValueAt(tempRow, tempColumn);
 
-                    if (!(cellValue instanceof String)) {
-                        match = false;
-                        break;
-                    }
-                    String value = (String) cellValue;
-                    if (exactMatch) {
-                        if (!value.equals(sequence[seqIndex])) {
+                        if (!(cellValue instanceof String)) {
                             match = false;
                             break;
                         }
-                    } else {
-                        if (!value.contains(sequence[seqIndex])) {
-                            match = false;
-                            break;
+                        String value = (String) cellValue;
+                        if (exactMatch) {
+                            if (!value.equals(sequence[seqIndex])) {
+                                match = false;
+                                break;
+                            }
+                        } else {
+                            if (!value.contains(sequence[seqIndex])) {
+                                match = false;
+                                break;
+                            }
                         }
-                    }
-                    int[] nextCell = bintable.getNextCell(currentRow, currentColumn);
-                    currentRow = nextCell[0];
-                    currentColumn = nextCell[1];
-                }
 
-                if (match) {
-                    return new int[] { row, column };
+                        int[] nextCell = bintable.getNextCell(tempRow, tempColumn);
+                        tempRow = nextCell[0];
+                        tempColumn = nextCell[1];
+                    }
+
+                    if (match) {
+                        return new int[]{row, column};
+                    }
                 }
+                currentColumn = 1;
             }
-            startColumn = 1;
+            int[] nextCell = bintable.getNextCell(currentRow, currentColumn);
+            if (!firstPass || (nextCell[0] == startRow && nextCell[1] == startColumn)) {
+                break;
+            }
+
+            firstPass = false;
+            currentRow = 0;
+            currentColumn = 1;
         }
 
-        return null;
+        System.out.println("Совпадений не найдено");
+        return new int[]{-1, -1};
     }
 }
