@@ -383,8 +383,7 @@ public class ButtonSetup {
                 JFrame searchWindow = new JFrame("Поиск в таблице");
                 JPanel searchPanel = new JPanel(new BorderLayout());
 
-                BinTableModel model = (BinTableModel) binTable.getModel();
-                ButtonUtils.setTable(model);
+                ButtonUtils.setTable(binTable);
 
                 JPanel inputPanel = ButtonUtils.createInputPanel();
                 JPanel buttonPanel = ButtonUtils.createButtonPanel(inputPanel);

@@ -1,16 +1,21 @@
 package FirstTable;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.List;
+
 public class ButtonUtils {
     private static ArrayList<JTextField> searchFields = new ArrayList<>();
-    private static BinTableModel bintable;
-    public static void setTable(BinTableModel table) {
-        bintable = table;
+    private static JTable binTable;
+    private static ByteSearch byteSearch;
+
+    public static void setTable(JTable table) {
+        binTable = table;
+        byteSearch = new ByteSearch((BinTableModel) binTable.getModel());
     }
+
     public static JPanel createInputPanel() {
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JTextField searchField = new JTextField(2);
@@ -18,6 +23,7 @@ public class ButtonUtils {
         inputPanel.add(searchField);
         return inputPanel;
     }
+
     public static JPanel createButtonPanel(JPanel inputPanel) {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton addButton = new JButton("+");
@@ -32,6 +38,7 @@ public class ButtonUtils {
             }
         });
         buttonPanel.add(addButton);
+
         JButton removeButton = new JButton("-");
         removeButton.addActionListener(new ActionListener() {
             @Override
@@ -45,6 +52,7 @@ public class ButtonUtils {
             }
         });
         buttonPanel.add(removeButton);
+
         JButton findButton = new JButton("Найти");
         findButton.addActionListener(new ActionListener() {
             @Override
@@ -54,18 +62,45 @@ public class ButtonUtils {
                     String value = searchFields.get(i).getText();
                     searchBytes[i] = value;
                 }
-                ButtonUtils.setTable(bintable);
-                ByteSearch byteSearch = new ByteSearch(bintable);
-                List<String> results = byteSearch.searchBytes(searchBytes, true);
-                if (results.isEmpty()) {
-
+                int startRow = binTable.getSelectedRow();
+                int startColumn = binTable.getSelectedColumn();
+                if (startRow == -1 || startColumn == -1) {
+                    startRow = 0;
+                    startColumn = 1;
                 } else {
-                    System.out.println("Последовательность байт найдена");
-                        System.out.println("Результат " + results);
+                    int[] nextCell = getNextCell(startRow, startColumn);
+                    startRow = nextCell[0];
+                    startColumn = nextCell[1];
+                }
+                int[] foundCoordinates = byteSearch.searchBytes(startRow, startColumn, searchBytes, true);
+                if (foundCoordinates == null) {
+                    System.out.println("Совпадений не найдено");
+                } else {
+                    int foundRow = foundCoordinates[0];
+                    int foundColumn = foundCoordinates[1];
+                    System.out.println("Найдено совпадение в строке: " + foundRow + ", столбце: " + foundColumn);
+                    binTable.changeSelection(foundRow, foundColumn, false, false);
                 }
             }
         });
         buttonPanel.add(findButton);
         return buttonPanel;
+    }
+
+    public static int[] getNextCell(int currentRow, int currentColumn) {
+        int rowCount = binTable.getRowCount();
+        int columnCount = binTable.getColumnCount();
+
+        if (currentColumn < columnCount - 1) {
+            currentColumn++;
+        } else {
+            currentColumn = 1;
+            currentRow++;
+            if (currentRow >= rowCount) {
+                currentRow = 0;
+            }
+        }
+
+        return new int[]{currentRow, currentColumn};
     }
 }
