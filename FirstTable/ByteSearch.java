@@ -5,22 +5,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ByteSearch {
-    private JTable bintable;
 
-    public ByteSearch(JTable table) {
+    private BinTableModel bintable;
+
+    public ByteSearch(BinTableModel table) {
         this.bintable = table;
     }
 
     public List<Integer> searchBytes(byte[] sequence, boolean exactMatch) {
         List<Integer> results = new ArrayList<>();
 
-        DefaultTableModel model = (DefaultTableModel) bintable.getModel();
-        int rowCount = model.getRowCount();
-        int columnCount = model.getColumnCount();
+        int rowCount = bintable.getRowCount();
+        int columnCount = bintable.getColumnCount();
 
         for (int row = 0; row < rowCount; row++) {
             for (int column = 0; column < columnCount; column++) {
-                Object cellValue = model.getValueAt(row, column);
+                Object cellValue = bintable.getValueAt(row, column);
                 if (cellValue instanceof Byte) {
                     byte value = (Byte) cellValue;
                     if (exactMatch) {
