@@ -12,42 +12,58 @@ public class ByteSearch {
         this.bintable = table;
     }
 
-    public List<Integer> searchBytes(String[] sequence, boolean exactMatch) {
-        List<Integer> results = new ArrayList<>();
+    public List<String> searchBytes(String[] sequence, boolean exactMatch) {
+        List<String> results = new ArrayList<>();
 
         int rowCount = bintable.getRowCount();
         int columnCount = bintable.getColumnCount();
+        int sequenceLength = sequence.length;
 
         for (int row = 0; row < rowCount; row++) {
             for (int column = 1; column < columnCount; column++) {
-                Object cellValue = bintable.getValueAt(row, column);
-                if (cellValue instanceof String) {
+                boolean match = true;
+                int currentRow = row;
+                int currentColumn = column;
+
+                for (int seqIndex = 0; seqIndex < sequenceLength; seqIndex++) {
+                    Object cellValue = bintable.getValueAt(currentRow, currentColumn);
+
+                    if (!(cellValue instanceof String)) {
+                        match = false;
+                        break;
+                    }
+
                     String value = (String) cellValue;
+
                     if (exactMatch) {
-                        if (value.equals(sequence[column])) {
-                            results.add(row);
+                        if (!value.equals(sequence[seqIndex])) {
+                            match = false;
                             break;
                         }
                     } else {
-                        if (value.contains(sequence[column])) {
-                            results.add(row);
+                        if (!value.contains(sequence[seqIndex])) {
+                            match = false;
                             break;
                         }
                     }
+
+                    int[] nextCell = bintable.getNextCell(currentRow, currentColumn);
+                    currentRow = nextCell[0];
+                    currentColumn = nextCell[1];
+                }
+
+                if (match) {
+                    results.add("Совпадение найдено начиная с строки: " + row + ", столбца: " + column);
+                    System.out.println("Совпадение найдено начиная с строки: " + row + ", столбца: " + column);
                 }
             }
         }
 
+        if (results.isEmpty()) {
+            System.out.println("Совпадений не найдено");
+        }
+
         return results;
     }
-}
 
-//        for (String b : sequence) {
-//            System.out.println(b);
-//        }
-//        System.out.println("\n");
-//        for (int row = 0; row < 1; row++) {
-//            for (int column = 0; column < columnCount; column++) {
-//                System.out.println(", " + bintable.getValueAt(row, column));
-//            }
-//            }
+}

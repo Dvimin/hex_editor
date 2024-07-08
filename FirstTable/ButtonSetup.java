@@ -137,7 +137,7 @@ public class ButtonSetup {
                             }
 
                             binTable.repaint();
-                            binTable.changeSelection(selectedRow, selectedColumn, false, false);
+
                             dialog.dispose();
                         }
                     });

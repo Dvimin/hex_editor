@@ -56,14 +56,12 @@ public class ButtonUtils {
                 }
                 ButtonUtils.setTable(bintable);
                 ByteSearch byteSearch = new ByteSearch(bintable);
-                List<Integer> results = byteSearch.searchBytes(searchBytes, true);
+                List<String> results = byteSearch.searchBytes(searchBytes, true);
                 if (results.isEmpty()) {
 
                 } else {
-                    System.out.println("Последовательность байт найдена в следующих строках:");
-                    for (int row : results) {
-                        System.out.println("Строка " + (row + 1));
-                    }
+                    System.out.println("Последовательность байт найдена");
+                        System.out.println("Результат " + results);
                 }
             }
         });
