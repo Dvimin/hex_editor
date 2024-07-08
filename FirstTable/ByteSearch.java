@@ -12,24 +12,24 @@ public class ByteSearch {
         this.bintable = table;
     }
 
-    public List<Integer> searchBytes(byte[] sequence, boolean exactMatch) {
+    public List<Integer> searchBytes(String[] sequence, boolean exactMatch) {
         List<Integer> results = new ArrayList<>();
 
         int rowCount = bintable.getRowCount();
         int columnCount = bintable.getColumnCount();
 
         for (int row = 0; row < rowCount; row++) {
-            for (int column = 0; column < columnCount; column++) {
+            for (int column = 1; column < columnCount; column++) {
                 Object cellValue = bintable.getValueAt(row, column);
-                if (cellValue instanceof Byte) {
-                    byte value = (Byte) cellValue;
+                if (cellValue instanceof String) {
+                    String value = (String) cellValue;
                     if (exactMatch) {
-                        if (value == sequence[column]) {
+                        if (value.equals(sequence[column])) {
                             results.add(row);
                             break;
                         }
                     } else {
-                        if ((value & sequence[column]) == sequence[column]) {
+                        if (value.contains(sequence[column])) {
                             results.add(row);
                             break;
                         }
@@ -41,3 +41,13 @@ public class ByteSearch {
         return results;
     }
 }
+
+//        for (String b : sequence) {
+//            System.out.println(b);
+//        }
+//        System.out.println("\n");
+//        for (int row = 0; row < 1; row++) {
+//            for (int column = 0; column < columnCount; column++) {
+//                System.out.println(", " + bintable.getValueAt(row, column));
+//            }
+//            }

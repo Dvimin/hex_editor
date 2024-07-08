@@ -49,16 +49,16 @@ public class ButtonUtils {
         findButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                byte[] searchBytes = new byte[searchFields.size()];
+                String[] searchBytes = new String[searchFields.size()];
                 for (int i = 0; i < searchFields.size(); i++) {
                     String value = searchFields.get(i).getText();
-                    searchBytes[i] = Byte.parseByte(value);
+                    searchBytes[i] = value;
                 }
                 ButtonUtils.setTable(bintable);
                 ByteSearch byteSearch = new ByteSearch(bintable);
                 List<Integer> results = byteSearch.searchBytes(searchBytes, true);
                 if (results.isEmpty()) {
-                    System.out.println("Последовательность байт не найдена.");
+
                 } else {
                     System.out.println("Последовательность байт найдена в следующих строках:");
                     for (int row : results) {
