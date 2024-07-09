@@ -17,19 +17,20 @@ public class FrameSetup {
 
         BinTableModel btm = new BinTableModel();
 
-//        File file = new File("FirstTable/TestFile/test.txt");
-//        byte[] hex = new byte[16];
-//
-//        try {
-//            byte[] data = Files.readAllBytes(file.toPath());
-//            for (int i = 0; i < data.length; i += 16) {
-//                System.arraycopy(data, i, hex, 0, Math.min(16, data.length - i));
-//                btm.addData(hex);
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        //---------------------- это часть кода для автоматического открытия тестового файла (спокойно убирается в случае отсутвия необходимости) --------------------
+        File file = new File("FirstTable/TestFile/test.txt");
+        byte[] hex = new byte[16];
 
+        try {
+            byte[] data = Files.readAllBytes(file.toPath());
+            for (int i = 0; i < data.length; i += 16) {
+                System.arraycopy(data, i, hex, 0, Math.min(16, data.length - i));
+                btm.addData(hex);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //----------------------------------------------------------------------------------------------------------------------------
         TableSetup tableSetup = new TableSetup();
         tableSetup.setupTable(frame, btm);
 

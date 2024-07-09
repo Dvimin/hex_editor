@@ -11,10 +11,8 @@ public class MenuSetup {
         JMenuBar menuBar = new JMenuBar();
 
         JMenu fileMenu = new JMenu("Файл");
-        JMenu editMenu= new JMenu("Правка");
         JMenu helpMenu = new JMenu("Помощь");
         menuBar.add(fileMenu);
-        menuBar.add(editMenu);
         menuBar.add(helpMenu);
 
         JMenuItem openMenuItem = new JMenuItem("Открыть");
@@ -36,7 +34,6 @@ public class MenuSetup {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 fileActions.openFile(btm, actionEvent);
-                tableSetup.setupTable(frame, btm);
             }
         });
 
@@ -51,6 +48,13 @@ public class MenuSetup {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 fileActions.exit();
+            }
+        });
+
+        helpmenuItem1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                JOptionPane.showMessageDialog(frame, "Увы, помощи пока нет", "Помощь", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
