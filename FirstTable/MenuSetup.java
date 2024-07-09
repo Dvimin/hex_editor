@@ -1,4 +1,6 @@
 package FirstTable;
+
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -41,7 +43,7 @@ public class MenuSetup {
         saveMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                fileActions.saveFile(actionEvent);
+                fileActions.saveFile(actionEvent, btm);
             }
         });
 

@@ -43,17 +43,29 @@ public class BinTableModel extends AbstractTableModel {
         return columnCount;
     }
 
-// не используются (не по заданию)
-    public void addColumn(byte[] data) {
-        columnCount++;
-        this.addData(data);
+
+    public void clearData() {
+        dataArrayList.clear();
+        fireTableDataChanged();
     }
 
-    public void deleteColumn(byte[] data) {
-        if (columnCount > 1) {
-            columnCount--;
-            this.addData(data);
+    public byte[] getAllData() {
+        ArrayList<Byte> byteList = new ArrayList<>();
+        for (String[] row : dataArrayList) {
+            for (int i = 1; i < columnCount; i++) {
+                if (!row[i].isEmpty()) {
+                    byte value = (byte) Integer.parseInt(row[i], 16);
+                    byteList.add(value);
+                }
+            }
         }
+
+        byte[] byteArray = new byte[byteList.size()];
+        for (int i = 0; i < byteList.size(); i++) {
+            byteArray[i] = byteList.get(i);
+        }
+
+        return byteArray;
     }
 
     public void addData(byte[] data) {

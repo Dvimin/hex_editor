@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.io.*;
 
 public class FileActions {
 
@@ -15,21 +16,34 @@ public class FileActions {
             File selectedFile = fileChooser.getSelectedFile();
             try {
                 byte[] data = Files.readAllBytes(selectedFile.toPath());
-                for (int i = 0; i < data.length; i += btm.getColumnCount()) {
-                    byte[] hex = new byte[btm.getColumnCount()];
-                    System.arraycopy(data, i, hex, 0, Math.min(btm.getColumnCount(), data.length - i));
+                btm.clearData();
+                int blockSize = 16;
+                for (int i = 0; i < data.length; i += blockSize) {
+                    byte[] hex = new byte[blockSize];
+                    System.arraycopy(data, i, hex, 0, Math.min(blockSize, data.length - i));
                     btm.addData(hex);
                 }
-                System.out.println("The file is open!");
             } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Ошибка чтения файла: " + e.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();
             }
         }
     }
 
-    public void saveFile(ActionEvent actionEvent) {
+    public void saveFile(ActionEvent actionEvent, BinTableModel btm) {
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.showSaveDialog(null);
+        int returnValue = fileChooser.showSaveDialog(null);
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            try (FileOutputStream fos = new FileOutputStream(selectedFile)) {
+                byte[] data = btm.getAllData();
+                fos.write(data);
+                JOptionPane.showMessageDialog(null, "Файл сохранен: " + selectedFile.getAbsolutePath(), "Сохранено", JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Ошибка при сохранении файла: " + e.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+        }
     }
 
     public void exit() {
