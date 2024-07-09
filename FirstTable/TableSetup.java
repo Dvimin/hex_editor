@@ -1,4 +1,5 @@
 package FirstTable;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -7,8 +8,14 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
+// Класс TableSetup предназначен для настройки таблицы JTable.
 public class TableSetup {
 
+    /**
+     * Метод setupTable настраивает таблицу с заданным фреймом и моделью данных.
+     * @param frame фрейм, в который встраивается таблица
+     * @param btm модель данных для таблицы
+     */
     public void setupTable(JFrame frame, BinTableModel btm) {
         JTable binTable = new JTable(btm) {
             @Override
@@ -48,31 +55,38 @@ public class TableSetup {
             }
         };
 
+        // Установка пустой рамки для выделения фокусной ячейки
         Border border = BorderFactory.createLineBorder(new Color(0, 0, 0, 0), 0);
         UIManager.put("Table.focusCellHighlightBorder", border);
 
+        // Настройка параметров таблицы
         binTable.getTableHeader().setReorderingAllowed(false);
         binTable.getTableHeader().setResizingAllowed(false);
         binTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-
         binTable.setCellSelectionEnabled(true);
         binTable.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 
+        // Настройка кнопок
         ButtonSetup buttonSetup = new ButtonSetup();
         JPanel buttonPanel = buttonSetup.setupButtons(frame, binTable, btm);
 
+        // Добавление слушателя выделения ячеек
         binTable.getSelectionModel().addListSelectionListener(new CustomSelectionListener(binTable));
         binTable.setGridColor(Color.WHITE);
+
+        // Установка рендерера для первого столбца и остальных столбцов таблицы
         binTable.getColumnModel().getColumn(0).setCellRenderer(new RendererNameRow());
         for (int i = 1; i < binTable.getColumnCount(); i++) {
             binTable.getColumnModel().getColumn(i).setCellRenderer(new OtherColumnsRenderer());
         }
 
+        // Установка редактора ячеек для остальных столбцов
         MyCellEditor editor = new MyCellEditor();
         for (int i = 1; i < binTable.getColumnCount(); i++) {
             binTable.getColumnModel().getColumn(i).setCellEditor(editor);
         }
 
+        // Настройка заголовка таблицы
         JTableHeader header = binTable.getTableHeader();
         header.setDefaultRenderer(new DefaultTableCellRenderer() {
             @Override
@@ -87,10 +101,12 @@ public class TableSetup {
             }
         });
 
-        JScrollPane binTableScrollPage = new JScrollPane(binTable);
+        // Создание панели с прокруткой для таблицы
+        JScrollPane binTableScrollPane = new JScrollPane(binTable);
         binTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        TableColumn column = null;
+        // Настройка предпочтительной ширины столбцов
+        TableColumn column;
         column = binTable.getColumnModel().getColumn(0);
         column.setPreferredWidth(80);
         for (int i = 1; i < binTable.getColumnCount(); i++) {
@@ -102,15 +118,18 @@ public class TableSetup {
             }
         }
 
+        // Создание левой и правой панели для разделения с кнопками
         JPanel leftPanel = new JPanel(new BorderLayout());
-        leftPanel.add(binTableScrollPage, BorderLayout.CENTER);
+        leftPanel.add(binTableScrollPane, BorderLayout.CENTER);
 
         JPanel rightPanel = new JPanel(new BorderLayout());
         rightPanel.add(buttonPanel, BorderLayout.NORTH);
 
+        // Создание разделителя и установка начальной позиции
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
         splitPane.setDividerLocation(500);
 
+        // Добавление разделителя в контент панель фрейма
         frame.getContentPane().setLayout(new BorderLayout());
         frame.getContentPane().add(splitPane, BorderLayout.CENTER);
     }

@@ -8,6 +8,8 @@ import java.nio.file.Files;
 
 public class FrameSetup {
 
+
+    // Настройка основного фрейма приложения.
     public void setupFrame() {
         JFrame frame = new JFrame("HEX-editor");
         frame.setSize(new Dimension(1000, 400));
@@ -16,8 +18,20 @@ public class FrameSetup {
         frame.setLayout(new GridBagLayout());
 
         BinTableModel btm = new BinTableModel();
+        setupTestFile(btm); // Вызов метода для загрузки тестового файла
 
-        //---------------------- это часть кода для автоматического открытия тестового файла (спокойно убирается в случае отсутвия необходимости) --------------------
+        TableSetup tableSetup = new TableSetup();
+        tableSetup.setupTable(frame, btm);
+
+        MenuSetup menuSetup = new MenuSetup();
+        menuSetup.setupMenu(frame, btm, tableSetup);
+
+        frame.setVisible(true);
+        frame.pack();
+    }
+
+    // Метод для загрузки тестового файла в модель таблицы. Может быть удален при необходимости.
+    private void setupTestFile(BinTableModel btm) {
         File file = new File("FirstTable/TestFile/test.txt");
         byte[] hex = new byte[16];
 
@@ -30,15 +44,6 @@ public class FrameSetup {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //----------------------------------------------------------------------------------------------------------------------------
-        TableSetup tableSetup = new TableSetup();
-        tableSetup.setupTable(frame, btm);
-
-        MenuSetup menuSetup = new MenuSetup();
-        menuSetup.setupMenu(frame, btm, tableSetup);
-
-        frame.setVisible(true);
-        frame.pack();
     }
 
 }

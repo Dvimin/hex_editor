@@ -4,13 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class ButtonSetup {
 
     private static String[][] copiedBlock;
 
+    // Настройка панели с кнопками для управления таблицей
     public static JPanel setupButtons(JFrame frame, JTable binTable, BinTableModel btm) {
         JButton editButton = new JButton("Изменить");
         JButton resetButton = new JButton("Сбросить");
@@ -27,8 +27,10 @@ public class ButtonSetup {
         JButton byteSearchButton = new JButton("Найти");
         binTable.changeSelection(0, 1, false, false);
 
-
+        // Настройка бокса для выбора количества ячеек при вставке справа
         JComboBox<Integer> insertCellRightComboBox = new JComboBox<>(new Integer[]{1, 2, 4, 8});
+
+        // Обработчик для вставки ячейки справа
         insertCellRightButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -64,7 +66,10 @@ public class ButtonSetup {
             }
         });
 
+        // Настройка комбобокса для выбора количества ячеек при вставке слева
         JComboBox<Integer> insertCellLeftComboBox = new JComboBox<>(new Integer[]{1, 2, 4, 8});
+
+        // Обработчик для вставки ячейки слева
         insertCellLeftButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -96,6 +101,7 @@ public class ButtonSetup {
             }
         });
 
+        // Обработчик для редактирования ячейки
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -111,6 +117,7 @@ public class ButtonSetup {
             }
         });
 
+        // Обработчик для сброса значений ячеек
         resetButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -130,6 +137,7 @@ public class ButtonSetup {
             }
         });
 
+        // Обработчик для удаления ячеек
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -152,6 +160,7 @@ public class ButtonSetup {
             }
         });
 
+        // Обработчик для копирования выделенного блока
         copyBlockButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -171,6 +180,7 @@ public class ButtonSetup {
             }
         });
 
+        // Обработчик для вырезания сдвигом
         cutBlockWithShiftButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -200,6 +210,7 @@ public class ButtonSetup {
             }
         });
 
+        // Обработчик для вырезания с сбросом
         cutBlockWithResetButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -224,6 +235,7 @@ public class ButtonSetup {
             }
         });
 
+        // Обработчик для вставки без сдвига
         pasteWithoutShiftButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -251,6 +263,7 @@ public class ButtonSetup {
             }
         });
 
+        // Обработчик для вставки справа со сдвигом
         pasteWithShiftRightButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -281,6 +294,7 @@ public class ButtonSetup {
             }
         });
 
+        // Обработчик для вставки слева со сдвигом
         pasteWithShiftLeftButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -308,6 +322,7 @@ public class ButtonSetup {
             }
         });
 
+        // Обработчик для очистки данных
         clearButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -322,6 +337,7 @@ public class ButtonSetup {
             }
         });
 
+        // Обработчик для поиска в таблице
         byteSearchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -344,7 +360,7 @@ public class ButtonSetup {
             }
         });
 
-
+        // Настройка панели с кнопками
         JPanel buttonPanel = new JPanel(new GridBagLayout());
         Component[] components = {editButton, resetButton, copyBlockButton, deleteButton, pasteWithoutShiftButton, byteSearchButton, cutBlockWithShiftButton,
                 cutBlockWithResetButton,  pasteWithShiftLeftButton, pasteWithShiftRightButton, insertCellLeftButton, insertCellLeftComboBox, insertCellRightButton, insertCellRightComboBox, clearButton};
@@ -353,6 +369,7 @@ public class ButtonSetup {
         gbc.insets = new Insets(1, 1, 1, 1);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
+        // Добавление кнопок на панель в две колонки
         for (int i = 0; i < components.length; i++) {
             gbc.gridx = i % 2;
             gbc.gridy = i / 2;

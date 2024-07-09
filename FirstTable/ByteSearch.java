@@ -3,13 +3,23 @@ package FirstTable;
 import java.util.regex.Pattern;
 
 public class ByteSearch {
-
+    // Модель таблицы для поиска
     private BinTableModel bintable;
+
+    // Конструктор класса
 
     public ByteSearch(BinTableModel table) {
         this.bintable = table;
     }
 
+    /**
+     * Выполняет поиск последовательности байтов в таблице.
+     * @param startRow начальная строка для поиска
+     * @param startColumn начальный столбец для поиска
+     * @param sequence массив строк, представляющих последовательность для поиска
+     * @param exactMatch флаг точного соответствия при сравнении
+     * @return массив с координатами найденной последовательности [row, column], либо [-1, -1], если не найдено
+     */
     public int[] searchBytes(int startRow, int startColumn, String[] sequence, boolean exactMatch) {
         int rowCount = bintable.getRowCount();
         int columnCount = bintable.getColumnCount();
@@ -27,7 +37,6 @@ public class ByteSearch {
 
                     for (int seqIndex = 0; seqIndex < sequenceLength; seqIndex++) {
                         Object cellValue = bintable.getValueAt(tempRow, tempColumn);
-
                         if (!(cellValue instanceof String)) {
                             match = false;
                             break;
@@ -45,7 +54,6 @@ public class ByteSearch {
                                 break;
                             }
                         }
-
                         int[] nextCell = bintable.getNextCell(tempRow, tempColumn);
                         tempRow = nextCell[0];
                         tempColumn = nextCell[1];

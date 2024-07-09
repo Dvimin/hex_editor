@@ -1,14 +1,15 @@
 package FirstTable;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.io.*;
 
 public class FileActions {
 
+    // Открытие файла и загрузка данных в модель таблицы
     public void openFile(BinTableModel btm, ActionEvent actionEvent) {
         JFileChooser fileChooser = new JFileChooser();
         int returnValue = fileChooser.showOpenDialog(null);
@@ -30,6 +31,7 @@ public class FileActions {
         }
     }
 
+    // Сохранение данных модели таблицы в файл
     public void saveFile(ActionEvent actionEvent, BinTableModel btm) {
         JFileChooser fileChooser = new JFileChooser();
         int returnValue = fileChooser.showSaveDialog(null);
@@ -46,6 +48,7 @@ public class FileActions {
         }
     }
 
+    // Выход из приложения
     public void exit() {
         System.exit(1);
     }
