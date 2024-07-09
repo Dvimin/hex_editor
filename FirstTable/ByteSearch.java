@@ -1,6 +1,6 @@
 package FirstTable;
 
-import javax.swing.JTable;
+import java.util.regex.Pattern;
 
 public class ByteSearch {
 
@@ -39,7 +39,8 @@ public class ByteSearch {
                                 break;
                             }
                         } else {
-                            if (!value.contains(sequence[seqIndex])) {
+                            String regex = sequence[seqIndex].replace("?", ".?").replace("*", ".*?");
+                            if (!Pattern.matches(regex, value)) {
                                 match = false;
                                 break;
                             }
@@ -65,8 +66,6 @@ public class ByteSearch {
             currentRow = 0;
             currentColumn = 1;
         }
-
-        System.out.println("Совпадений не найдено");
         return new int[]{-1, -1};
     }
 }

@@ -58,33 +58,47 @@ public class ButtonUtils {
         findButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String[] searchByte = new String[searchFields.size()];
-                for (int i = 0; i < searchFields.size(); i++) {
-                    String value = searchFields.get(i).getText();
-                    searchByte[i] = value;
-                }
-                int startRow = binTable.getSelectedRow();
-                int startColumn = binTable.getSelectedColumn();
-                if (startRow == -1 || startColumn == -1) {
-                    startRow = 0;
-                    startColumn = 1;
+                if (validateInput()) {
+                    String[] searchByte = new String[searchFields.size()];
+                    for (int i = 0; i < searchFields.size(); i++) {
+                        String value = searchFields.get(i).getText();
+                        searchByte[i] = value;
+                    }
+                    int startRow = binTable.getSelectedRow();
+                    int startColumn = binTable.getSelectedColumn();
+                    if (startRow == -1 || startColumn == -1) {
+                        startRow = 0;
+                        startColumn = 1;
+                    } else {
+                        int[] nextCell = getNextCell(startRow, startColumn);
+                        startRow = nextCell[0];
+                        startColumn = nextCell[1];
+                    }
+                    int[] foundCoordinates = byteSearch.searchBytes(startRow, startColumn, searchByte, false);
+                    int foundRow = foundCoordinates[0];
+                    int foundColumn = foundCoordinates[1];
+                    if (foundRow == -1 && foundColumn == -1) {
+                        JOptionPane.showMessageDialog(null, "Совпадений не найдено", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    }  else {
+                        binTable.changeSelection(foundRow, foundColumn, false, false);
+                    }
                 } else {
-                    int[] nextCell = getNextCell(startRow, startColumn);
-                    startRow = nextCell[0];
-                    startColumn = nextCell[1];
-                }
-                int[] foundCoordinates = byteSearch.searchBytes(startRow, startColumn, searchByte, true);
-                int foundRow = foundCoordinates[0];
-                int foundColumn = foundCoordinates[1];
-                if (foundRow == -1 && foundColumn == -1) {
-                    JOptionPane.showMessageDialog(null, "Совпадений не найдено", "Ошибка", JOptionPane.ERROR_MESSAGE);
-                }  else {
-                    binTable.changeSelection(foundRow, foundColumn, false, false);
+                    JOptionPane.showMessageDialog(null,"Введите двузначное число в формате 16-ричной системы (0-9, A-F), либо символы '*' или '?'", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
         buttonPanel.add(findButton);
         return buttonPanel;
+    }
+
+    private static boolean validateInput() {
+        for (JTextField field : searchFields) {
+            String text = field.getText().trim();
+            if (!text.matches("[0-9A-F*?]*")) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static int[] getNextCell(int currentRow, int currentColumn) {
