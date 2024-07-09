@@ -27,8 +27,8 @@ public class ButtonSetup {
         JButton byteSearchButton = new JButton("Найти");
         binTable.changeSelection(0, 1, false, false);
 
-        JComboBox<Integer> insertCellRightComboBox = new JComboBox<>(new Integer[]{1, 2, 4, 8});
 
+        JComboBox<Integer> insertCellRightComboBox = new JComboBox<>(new Integer[]{1, 2, 4, 8});
         insertCellRightButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -36,36 +36,14 @@ public class ButtonSetup {
                 int selectedColumn = binTable.getSelectedColumn();
                 if (selectedRow != -1 && selectedColumn != -1) {
                     int numberOfCells = (int) insertCellRightComboBox.getSelectedItem();
-                    JDialog dialog = new JDialog(frame, "Введите значения", true);
-                    dialog.setLayout(new FlowLayout());
-                    dialog.setLocationRelativeTo(null);
-                    JTextField[] textFields = new JTextField[numberOfCells];
-                    for (int i = 0; i < numberOfCells; i++) {
-                        textFields[i] = new JTextField(2);
-                        dialog.add(textFields[i]);
-                        textFields[i].setInputVerifier(new InputVerifier() {
-                            @Override
-                            public boolean verify(JComponent input) {
-                                JTextField textField = (JTextField) input;
-                                String value = textField.getText();
-                                if (value.isEmpty()) {
-                                    return true;
-                                }
-                                if (!value.matches("[0-9A-F]{2}")) {
-                                    JOptionPane.showMessageDialog(null, "Ошибка: введите двузначное число в формате 16-ричной системы (0-9, A-F).", "Ошибка ввода", JOptionPane.ERROR_MESSAGE);
-                                    return false;
-                                }
-                                return true;
-                            }
-                        });
-                    }
-                    JButton insertButton = new JButton("Вставить");
-                    insertButton.addActionListener(new ActionListener() {
+                    CellInsertionDialog.showDialog(frame, binTable, selectedRow, selectedColumn, numberOfCells, "Введите значения", new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             BinTableModel model = (BinTableModel) binTable.getModel();
                             int nextRow = selectedRow;
                             int nextColumn = selectedColumn;
+                            JTextField[] textFields = CellInsertionDialog.getTextFields(); // Получаем ссылку на массив текстовых полей
+                            JDialog dialog = CellInsertionDialog.getDialog(); // Получаем ссылку на диалоговое окно
                             for (int i = 0; i < numberOfCells; i++) {
                                 String value = textFields[i].getText();
                                 ((BinTableModel) binTable.getModel()).insertCellRightAndShift(nextRow, nextColumn);
@@ -80,9 +58,6 @@ public class ButtonSetup {
                             dialog.dispose();
                         }
                     });
-                    dialog.add(insertButton);
-                    dialog.setSize(300, 100);
-                    dialog.setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
@@ -90,7 +65,6 @@ public class ButtonSetup {
         });
 
         JComboBox<Integer> insertCellLeftComboBox = new JComboBox<>(new Integer[]{1, 2, 4, 8});
-
         insertCellLeftButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -98,38 +72,14 @@ public class ButtonSetup {
                 int selectedColumn = binTable.getSelectedColumn();
                 if (selectedRow != -1 && selectedColumn != -1) {
                     int numberOfCells = (int) insertCellLeftComboBox.getSelectedItem();
-                    JDialog dialog = new JDialog(frame, "Введите значения", true);
-                    dialog.setLayout(new FlowLayout());
-                    dialog.setLocationRelativeTo(null);
-
-                    JTextField[] textFields = new JTextField[numberOfCells];
-                    for (int i = 0; i < numberOfCells; i++) {
-                        textFields[i] = new JTextField(2);
-                        dialog.add(textFields[i]);
-                        textFields[i].setInputVerifier(new InputVerifier() {
-                            @Override
-                            public boolean verify(JComponent input) {
-                                JTextField textField = (JTextField) input;
-                                String value = textField.getText();
-                                if (value.isEmpty()) {
-                                    return true;
-                                }
-                                if (!value.matches("[0-9A-F]{2}")) {
-                                    JOptionPane.showMessageDialog(null, "Ошибка: введите двузначное число в формате 16-ричной системы (0-9, A-F).", "Ошибка ввода", JOptionPane.ERROR_MESSAGE);
-                                    return false;
-                                }
-                                return true;
-                            }
-                        });
-                    }
-
-                    JButton insertButton = new JButton("Вставить");
-                    insertButton.addActionListener(new ActionListener() {
+                    CellInsertionDialog.showDialog(frame, binTable, selectedRow, selectedColumn, numberOfCells, "Введите значения", new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             BinTableModel model = (BinTableModel) binTable.getModel();
                             int nextRow = selectedRow;
                             int nextColumn = selectedColumn;
+                            JTextField[] textFields = CellInsertionDialog.getTextFields();
+                            JDialog dialog = CellInsertionDialog.getDialog();
                             for (int i = numberOfCells - 1; i >= 0; i--) {
                                 String value = textFields[i].getText();
                                 model.insertCellLeftAndShift(nextRow, nextColumn);
@@ -137,14 +87,9 @@ public class ButtonSetup {
                             }
 
                             binTable.repaint();
-
                             dialog.dispose();
                         }
                     });
-
-                    dialog.add(insertButton);
-                    dialog.setSize(300, 100);
-                    dialog.setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
