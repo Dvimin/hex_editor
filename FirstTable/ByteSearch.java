@@ -7,7 +7,6 @@ public class ByteSearch {
     private BinTableModel bintable;
 
     // Конструктор класса
-
     public ByteSearch(BinTableModel table) {
         this.bintable = table;
     }

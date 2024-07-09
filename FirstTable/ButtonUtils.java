@@ -74,7 +74,7 @@ public class ButtonUtils {
                         searchByte[i] = value;
                     }
 
-                    // Определение начальной позиции для поиска
+                    // Оbпределение начальной позиции для поиска
                     int startRow = binTable.getSelectedRow();
                     int startColumn = binTable.getSelectedColumn();
                     if (startRow == -1 || startColumn == -1) {
