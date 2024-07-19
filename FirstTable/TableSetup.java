@@ -30,38 +30,34 @@ public class TableSetup {
                     if (selectedColumns.length != 1 && selectedColumns.length != 2 && selectedColumns.length != 4 && selectedColumns.length != 8) {
                         return "Error";
                     }
-                    StringBuilder tooltipUnsigned = new StringBuilder("int без знака:");
-                    StringBuilder tooltipSigned = new StringBuilder("int со знаком:");
-                    StringBuilder tooltipFloat = new StringBuilder("float:");
-                    StringBuilder tooltipDouble = new StringBuilder("double:");
-
+                    StringBuilder html = new StringBuilder("<html><table>");
                     for (int row : selectedRows) {
+                        html.append("<tr>");
+
+                        html.append("<td style=\"text-align: right;\">")
+                                .append("<b>").append("int без знака:</b>").append("<br>")
+                                .append("<b>").append("int со знаком:</b>").append("<br>")
+                                .append("<b>").append("float:</b>").append("<br>")
+                                .append("<b>").append("double:</b>").append("<br>")
+                                .append("</td>");
+
                         for (int column : selectedColumns) {
                             Object cellValue = getValueAt(row, column);
                             if (cellValue != null) {
                                 int decimalValue = Integer.parseInt(cellValue.toString(), 16);
-                                tooltipUnsigned.append(" ").append(decimalValue).append(";");
-                                tooltipSigned.append(" ").append((byte) decimalValue).append(";");
-                                float floatValue = Float.intBitsToFloat(decimalValue);
-                                tooltipFloat.append(" ").append(floatValue).append(";");
-                                double doubleValue = Double.longBitsToDouble(decimalValue);
-                                tooltipDouble.append(" ").append(doubleValue).append(";");
+                                html.append("<td style=\"text-align: right;\">")
+                                        .append(decimalValue).append("<br>")
+                                        .append((byte) decimalValue).append("<br>")
+                                        .append(Float.intBitsToFloat(decimalValue)).append("<br>")
+                                        .append(Double.longBitsToDouble(decimalValue)).append("<br>")
+                                        .append("</td>");
                             }
                         }
+                        html.append("</tr>");
                     }
-                    if (tooltipUnsigned.length() > 0 && tooltipUnsigned.charAt(tooltipUnsigned.length() - 1) == ';') {
-                        tooltipUnsigned.deleteCharAt(tooltipUnsigned.length() - 1);
-                    }
-                    if (tooltipSigned.length() > 0 && tooltipSigned.charAt(tooltipSigned.length() - 1) == ';') {
-                        tooltipSigned.deleteCharAt(tooltipSigned.length() - 1);
-                    }
-                    if (tooltipFloat.length() > 0 && tooltipFloat.charAt(tooltipFloat.length() - 1) == ';') {
-                        tooltipFloat.deleteCharAt(tooltipFloat.length() - 1);
-                    }
-                    if (tooltipDouble.length() > 0 && tooltipDouble.charAt(tooltipDouble.length() - 1) == ';') {
-                        tooltipDouble.deleteCharAt(tooltipDouble.length() - 1);
-                    }
-                    return "<html>" + tooltipUnsigned.toString() + "<br>" + tooltipSigned.toString() + "<br>" + tooltipFloat.toString() + "<br>" + tooltipDouble.toString() + "</html>";
+
+                    html.append("</table></html>");
+                    return html.toString();
                 }
                 return super.getToolTipText(event);
             }
