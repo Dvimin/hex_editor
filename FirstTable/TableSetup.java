@@ -32,6 +32,8 @@ public class TableSetup {
                     }
                     StringBuilder tooltipUnsigned = new StringBuilder("int без знака:");
                     StringBuilder tooltipSigned = new StringBuilder("int со знаком:");
+                    StringBuilder tooltipFloat = new StringBuilder("float:");
+                    StringBuilder tooltipDouble = new StringBuilder("double:");
 
                     for (int row : selectedRows) {
                         for (int column : selectedColumns) {
@@ -40,6 +42,10 @@ public class TableSetup {
                                 int decimalValue = Integer.parseInt(cellValue.toString(), 16);
                                 tooltipUnsigned.append(" ").append(decimalValue).append(";");
                                 tooltipSigned.append(" ").append((byte) decimalValue).append(";");
+                                float floatValue = Float.intBitsToFloat(decimalValue);
+                                tooltipFloat.append(" ").append(floatValue).append(";");
+                                double doubleValue = Double.longBitsToDouble(decimalValue);
+                                tooltipDouble.append(" ").append(doubleValue).append(";");
                             }
                         }
                     }
@@ -49,7 +55,13 @@ public class TableSetup {
                     if (tooltipSigned.length() > 0 && tooltipSigned.charAt(tooltipSigned.length() - 1) == ';') {
                         tooltipSigned.deleteCharAt(tooltipSigned.length() - 1);
                     }
-                    return "<html>" + tooltipUnsigned.toString() + "<br>" + tooltipSigned.toString() + "</html>";
+                    if (tooltipFloat.length() > 0 && tooltipFloat.charAt(tooltipFloat.length() - 1) == ';') {
+                        tooltipFloat.deleteCharAt(tooltipFloat.length() - 1);
+                    }
+                    if (tooltipDouble.length() > 0 && tooltipDouble.charAt(tooltipDouble.length() - 1) == ';') {
+                        tooltipDouble.deleteCharAt(tooltipDouble.length() - 1);
+                    }
+                    return "<html>" + tooltipUnsigned.toString() + "<br>" + tooltipSigned.toString() + "<br>" + tooltipFloat.toString() + "<br>" + tooltipDouble.toString() + "</html>";
                 }
                 return super.getToolTipText(event);
             }
