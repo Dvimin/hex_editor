@@ -1,4 +1,5 @@
-package FirstTable;
+package utils;
+import ui.BinTableModel;
 
 import javax.swing.*;
 import java.awt.*;

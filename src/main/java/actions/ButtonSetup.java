@@ -1,10 +1,13 @@
-package FirstTable;
-
+package actions;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+import ui.BinTableModel;
+import ui.CellInsertionDialog;
+import ui.MyCellEditor;
+import utils.ButtonUtils;
 
 public class ButtonSetup {
 

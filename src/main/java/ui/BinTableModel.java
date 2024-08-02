@@ -1,5 +1,4 @@
-package FirstTable;
-
+package ui;
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 

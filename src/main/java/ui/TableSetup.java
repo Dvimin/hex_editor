@@ -1,4 +1,6 @@
-package FirstTable;
+package ui;
+import actions.ButtonSetup;
+import listeners.CustomSelectionListener;
 
 import javax.swing.*;
 import javax.swing.border.Border;

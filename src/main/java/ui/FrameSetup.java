@@ -1,5 +1,4 @@
-package FirstTable;
-
+package ui;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -32,7 +31,7 @@ public class FrameSetup {
 
     // Метод для загрузки тестового файла в модель таблицы. Может быть удален при необходимости.
     private void setupTestFile(BinTableModel btm) {
-        File file = new File("FirstTable/TestFile/test.txt");
+        File file = new File("src/main/resources/test.txt");
         byte[] hex = new byte[16];
 
         try {

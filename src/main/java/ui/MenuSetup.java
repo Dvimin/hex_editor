@@ -1,4 +1,5 @@
-package FirstTable;
+package ui;
+import actions.FileActions;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
