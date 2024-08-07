@@ -10,19 +10,19 @@ import java.nio.file.Files;
 
 public class FileActions {
 
-    private static final int PAGE_SIZE = 1024; // Размер страницы
+    private static final int PAGE_SIZE = 512; // Размер страницы
     private File currentFile;
     private RandomAccessFile raf;
 
     // Открытие файла и загрузка первой страницы в модель таблицы
-    public void OpenFile(BinTableModel btm, ActionEvent actionEvent) {
+    public void openFile(BinTableModel btm, ActionEvent actionEvent) {
         JFileChooser fileChooser = new JFileChooser();
         int returnValue = fileChooser.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             currentFile = fileChooser.getSelectedFile();
             try {
                 raf = new RandomAccessFile(currentFile, "r");
-                loadPage(btm, 0); // Загружаем первую страницу
+                loadPage(btm, 0);
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Ошибка чтения файла: " + e.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();
@@ -66,28 +66,6 @@ public class FileActions {
             }
         } else {
             System.err.println("Тестовый файл не найден: " + file.getAbsolutePath());
-        }
-    }
-
-    // Открытие файла и загрузка данных в модель таблицы
-    public void openFile(BinTableModel btm, ActionEvent actionEvent) {
-        JFileChooser fileChooser = new JFileChooser();
-        int returnValue = fileChooser.showOpenDialog(null);
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            try {
-                byte[] data = Files.readAllBytes(selectedFile.toPath());
-                btm.clearData();
-                int blockSize = 16;
-                for (int i = 0; i < data.length; i += blockSize) {
-                    byte[] hex = new byte[blockSize];
-                    System.arraycopy(data, i, hex, 0, Math.min(blockSize, data.length - i));
-                    btm.addData(hex);
-                }
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, "Ошибка чтения файла: " + e.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
-            }
         }
     }
 

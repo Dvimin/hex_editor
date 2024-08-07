@@ -1,9 +1,11 @@
 package actions;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+
 import ui.BinTableModel;
 import ui.CellInsertionDialog;
 import ui.MyCellEditor;
@@ -28,6 +30,9 @@ public class ButtonSetup {
         JButton insertCellRightButton = new JButton("Вставить ячейку справа");
         JButton insertCellLeftButton = new JButton("Вставить ячейку слева");
         JButton byteSearchButton = new JButton("Найти");
+        JButton emptyButton = new JButton();
+        JButton PreviousPageButton = new JButton("Предыдущая страница (←)");
+        JButton NextPageButton = new JButton("(→) Следующая страница");
         binTable.changeSelection(0, 1, false, false);
 
         // Настройка бокса для выбора количества ячеек при вставке справа
@@ -363,10 +368,30 @@ public class ButtonSetup {
             }
         });
 
+
+        emptyButton.setBorderPainted(false);
+        emptyButton.setContentAreaFilled(false);
+        emptyButton.setFocusPainted(false);
+        emptyButton.setEnabled(false);
+        PreviousPageButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            }
+        });
+
+        NextPageButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
         // Настройка панели с кнопками
         JPanel buttonPanel = new JPanel(new GridBagLayout());
-        Component[] components = {editButton, resetButton, copyBlockButton, deleteButton, pasteWithoutShiftButton, byteSearchButton, cutBlockWithShiftButton,
-                cutBlockWithResetButton,  pasteWithShiftLeftButton, pasteWithShiftRightButton, insertCellLeftButton, insertCellLeftComboBox, insertCellRightButton, insertCellRightComboBox, clearButton};
+        Component[] components = {editButton, resetButton, copyBlockButton, deleteButton, pasteWithoutShiftButton, byteSearchButton,
+                cutBlockWithShiftButton, cutBlockWithResetButton, pasteWithShiftLeftButton, pasteWithShiftRightButton,
+                insertCellLeftButton, insertCellLeftComboBox, insertCellRightButton, insertCellRightComboBox,
+                clearButton, emptyButton, PreviousPageButton, NextPageButton};
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(1, 1, 1, 1);

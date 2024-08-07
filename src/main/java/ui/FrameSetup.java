@@ -15,7 +15,6 @@ public class FrameSetup {
 
 
     // Настройка основного фрейма приложения.
-    // Настройка основного фрейма приложения.
     public void setupFrame() {
         JFrame frame = new JFrame("HEX-editor");
         frame.setSize(new Dimension(1000, 400));
