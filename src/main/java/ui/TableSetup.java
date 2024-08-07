@@ -1,4 +1,5 @@
 package ui;
+
 import actions.ButtonSetup;
 import listeners.CustomSelectionListener;
 
@@ -12,6 +13,13 @@ import java.awt.event.MouseEvent;
 
 // Класс TableSetup предназначен для настройки таблицы JTable.
 public class TableSetup {
+
+    private static final int DEFAULT_COLUMN_WIDTH = 80;
+    private static final int SMALL_COLUMN_WIDTH = 50;
+    private static final int DEFAULT_COLUMN_WIDTH_SMALL = 30;
+    private static final int INITIAL_DIVIDER_LOCATION = 450;
+    private static final Color HEADER_BACKGROUND_COLOR = Color.LIGHT_GRAY;
+    private static final Color CELL_BORDER_COLOR = Color.WHITE;
 
     /**
      * Метод setupTable настраивает таблицу с заданным фреймом и моделью данных.
@@ -102,10 +110,10 @@ public class TableSetup {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                cell.setBackground(Color.LIGHT_GRAY);
+                cell.setBackground(HEADER_BACKGROUND_COLOR);
 
                 if (cell instanceof JComponent) {
-                    ((JComponent) cell).setBorder(BorderFactory.createMatteBorder(0, 0, 1, 1, Color.WHITE));
+                    ((JComponent) cell).setBorder(BorderFactory.createMatteBorder(0, 0, 1, 1, CELL_BORDER_COLOR));
                 }
                 return cell;
             }
@@ -118,13 +126,13 @@ public class TableSetup {
         // Настройка предпочтительной ширины столбцов
         TableColumn column;
         column = binTable.getColumnModel().getColumn(0);
-        column.setPreferredWidth(80);
+        column.setPreferredWidth(DEFAULT_COLUMN_WIDTH);
         for (int i = 1; i < binTable.getColumnCount(); i++) {
             column = binTable.getColumnModel().getColumn(i);
             if (i % 4 == 0) {
-                column.setPreferredWidth(50);
+                column.setPreferredWidth(SMALL_COLUMN_WIDTH);
             } else {
-                column.setPreferredWidth(30);
+                column.setPreferredWidth(DEFAULT_COLUMN_WIDTH_SMALL);
             }
         }
 
@@ -137,7 +145,7 @@ public class TableSetup {
 
         // Создание разделителя и установка начальной позиции
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
-        splitPane.setDividerLocation(500);
+        splitPane.setDividerLocation(INITIAL_DIVIDER_LOCATION);
 
         // Добавление разделителя в контент панель фрейма
         frame.getContentPane().setLayout(new BorderLayout());
