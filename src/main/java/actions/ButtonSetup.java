@@ -118,6 +118,10 @@ public class ButtonSetup {
                 if (row != -1 && column != -1) {
                     binTable.getColumnModel().getColumn(column).setCellEditor(editor);
                     binTable.editCellAt(row, column, e);
+                    Component editorComponent = binTable.getEditorComponent();
+                    if (editorComponent != null) {
+                        editorComponent.requestFocusInWindow();
+                    }
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку для редактирования.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
