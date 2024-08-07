@@ -55,6 +55,20 @@ public class FileActions {
         }
     }
 
+    // Метод для загрузки тестового файла в модель таблицы.
+    public void setupTestFile(BinTableModel btm) {
+        File file = new File("src/main/resources/test.txt");
+        if (file.exists()) {
+            try {
+                openFileDirectly(btm, file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.err.println("Тестовый файл не найден: " + file.getAbsolutePath());
+        }
+    }
+
     // Открытие файла и загрузка данных в модель таблицы
     public void openFile(BinTableModel btm, ActionEvent actionEvent) {
         JFileChooser fileChooser = new JFileChooser();

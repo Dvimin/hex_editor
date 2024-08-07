@@ -1,5 +1,6 @@
 package ui;
 
+import actions.FileActions;
 import ui.BinTableModel;
 import ui.MenuSetup;
 import ui.TableSetup;
@@ -14,6 +15,7 @@ public class FrameSetup {
 
 
     // Настройка основного фрейма приложения.
+    // Настройка основного фрейма приложения.
     public void setupFrame() {
         JFrame frame = new JFrame("HEX-editor");
         frame.setSize(new Dimension(1000, 400));
@@ -22,7 +24,8 @@ public class FrameSetup {
         frame.setLayout(new GridBagLayout());
 
         BinTableModel btm = new BinTableModel();
-        setupTestFile(btm); // Вызов метода для загрузки тестового файла
+        FileActions fileActions = new FileActions();
+        fileActions.setupTestFile(btm); // Вызов метода для загрузки тестового файла
 
         TableSetup tableSetup = new TableSetup();
         tableSetup.setupTable(frame, btm);
@@ -34,20 +37,5 @@ public class FrameSetup {
         frame.pack();
     }
 
-    // Метод для загрузки тестового файла в модель таблицы. Может быть удален при необходимости.
-    private void setupTestFile(BinTableModel btm) {
-        File file = new File("src/main/resources/test.txt");
-        byte[] hex = new byte[16];
-
-        try {
-            byte[] data = Files.readAllBytes(file.toPath());
-            for (int i = 0; i < data.length; i += 16) {
-                System.arraycopy(data, i, hex, 0, Math.min(16, data.length - i));
-                btm.addData(hex);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
 }
