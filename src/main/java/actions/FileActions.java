@@ -1,12 +1,59 @@
 package actions;
+import ui.BinTableModel;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.Files;
-import ui.BinTableModel;
+
 public class FileActions {
+
+    private static final int PAGE_SIZE = 1024; // Размер страницы
+    private File currentFile;
+    private RandomAccessFile raf;
+
+    // Открытие файла и загрузка первой страницы в модель таблицы
+    public void OpenFile(BinTableModel btm, ActionEvent actionEvent) {
+        JFileChooser fileChooser = new JFileChooser();
+        int returnValue = fileChooser.showOpenDialog(null);
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            currentFile = fileChooser.getSelectedFile();
+            try {
+                raf = new RandomAccessFile(currentFile, "r");
+                loadPage(btm, 0); // Загружаем первую страницу
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Ошибка чтения файла: " + e.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // Прямое открытие файла и загрузка первой страницы
+    public void openFileDirectly(BinTableModel btm, File file) throws IOException {
+        currentFile = file;
+        raf = new RandomAccessFile(currentFile, "r");
+        loadPage(btm, 0);
+    }
+
+    // Загрузка страницы по номеру
+    private void loadPage(BinTableModel btm, int pageNumber) throws IOException {
+        btm.clearData();
+        long offset = pageNumber * PAGE_SIZE;
+        raf.seek(offset);
+        byte[] pageData = new byte[PAGE_SIZE];
+        int bytesRead = raf.read(pageData);
+        if (bytesRead != -1) {
+            if (bytesRead < PAGE_SIZE) {
+                byte[] actualData = new byte[bytesRead];
+                System.arraycopy(pageData, 0, actualData, 0, bytesRead);
+                btm.addData(actualData);
+            } else {
+                btm.addData(pageData);
+            }
+        }
+    }
 
     // Открытие файла и загрузка данных в модель таблицы
     public void openFile(BinTableModel btm, ActionEvent actionEvent) {

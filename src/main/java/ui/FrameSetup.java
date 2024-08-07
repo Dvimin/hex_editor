@@ -1,4 +1,9 @@
 package ui;
+
+import ui.BinTableModel;
+import ui.MenuSetup;
+import ui.TableSetup;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
