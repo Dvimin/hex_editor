@@ -86,6 +86,30 @@ public class FileActions {
         }
     }
 
+    private int currentPage = 0;
+
+    public void nextPage(BinTableModel btm) {
+        currentPage++;
+        try {
+            loadPage(btm, currentPage);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Ошибка загрузки страницы: " + e.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void previousPage(BinTableModel btm) {
+        if (currentPage > 0) {
+            currentPage--;
+            try {
+                loadPage(btm, currentPage);
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Ошибка загрузки страницы: " + e.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Вы находитесь на первой странице.", "Ошибка", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
     // Выход из приложения
     public void exit() {
         System.exit(1);

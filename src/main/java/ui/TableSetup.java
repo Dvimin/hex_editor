@@ -1,6 +1,7 @@
 package ui;
 
 import actions.ButtonSetup;
+import actions.FileActions;
 import listeners.CustomSelectionListener;
 
 import javax.swing.*;
@@ -85,8 +86,9 @@ public class TableSetup {
         binTable.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 
         // Настройка кнопок
+        FileActions fileActions = new FileActions();
         ButtonSetup buttonSetup = new ButtonSetup();
-        JPanel buttonPanel = buttonSetup.setupButtons(frame, binTable, btm);
+        JPanel buttonPanel = buttonSetup.setupButtons(frame, binTable, btm, fileActions);
 
         // Добавление слушателя выделения ячеек
         binTable.getSelectionModel().addListSelectionListener(new CustomSelectionListener(binTable));

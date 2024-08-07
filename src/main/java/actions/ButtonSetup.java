@@ -10,13 +10,12 @@ import ui.BinTableModel;
 import ui.CellInsertionDialog;
 import ui.MyCellEditor;
 import utils.ButtonUtils;
-
 public class ButtonSetup {
 
     private static String[][] copiedBlock;
 
     // Настройка панели с кнопками для управления таблицей
-    public static JPanel setupButtons(JFrame frame, JTable binTable, BinTableModel btm) {
+    public static JPanel setupButtons(JFrame frame, JTable binTable, BinTableModel btm, FileActions fileActions) {
         JButton editButton = new JButton("Изменить");
         JButton resetButton = new JButton("Сбросить");
         JButton deleteButton = new JButton("Удалить");
@@ -31,8 +30,8 @@ public class ButtonSetup {
         JButton insertCellLeftButton = new JButton("Вставить ячейку слева");
         JButton byteSearchButton = new JButton("Найти");
         JButton emptyButton = new JButton();
-        JButton PreviousPageButton = new JButton("Предыдущая страница (←)");
-        JButton NextPageButton = new JButton("(→) Следующая страница");
+        JButton previousPageButton = new JButton("Предыдущая страница (←)");
+        JButton nextPageButton = new JButton("(→) Следующая страница");
         binTable.changeSelection(0, 1, false, false);
 
         // Настройка бокса для выбора количества ячеек при вставке справа
@@ -214,7 +213,6 @@ public class ButtonSetup {
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
-
             }
         });
 
@@ -373,16 +371,20 @@ public class ButtonSetup {
         emptyButton.setContentAreaFilled(false);
         emptyButton.setFocusPainted(false);
         emptyButton.setEnabled(false);
-        PreviousPageButton.addActionListener(new ActionListener() {
+
+        // Обработчик для перехода на предыдущую страницу
+        previousPageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                fileActions.previousPage(btm);
             }
         });
 
-        NextPageButton.addActionListener(new ActionListener() {
+        // Обработчик для перехода на следующую страницу
+        nextPageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                fileActions.nextPage(btm);
             }
         });
 
@@ -391,7 +393,7 @@ public class ButtonSetup {
         Component[] components = {editButton, resetButton, copyBlockButton, deleteButton, pasteWithoutShiftButton, byteSearchButton,
                 cutBlockWithShiftButton, cutBlockWithResetButton, pasteWithShiftLeftButton, pasteWithShiftRightButton,
                 insertCellLeftButton, insertCellLeftComboBox, insertCellRightButton, insertCellRightComboBox,
-                clearButton, emptyButton, PreviousPageButton, NextPageButton};
+                clearButton, emptyButton, previousPageButton, nextPageButton};
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(1, 1, 1, 1);
