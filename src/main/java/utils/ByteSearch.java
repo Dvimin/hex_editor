@@ -1,4 +1,5 @@
 package utils;
+
 import ui.BinTableModel;
 
 import java.util.regex.Pattern;
@@ -14,10 +15,11 @@ public class ByteSearch {
 
     /**
      * Выполняет поиск последовательности байтов в таблице.
-     * @param startRow начальная строка для поиска
+     *
+     * @param startRow    начальная строка для поиска
      * @param startColumn начальный столбец для поиска
-     * @param sequence массив строк, представляющих последовательность для поиска
-     * @param exactMatch флаг точного соответствия при сравнении
+     * @param sequence    массив строк, представляющих последовательность для поиска
+     * @param exactMatch  флаг точного соответствия при сравнении
      * @return массив с координатами найденной последовательности [row, column], либо [-1, -1], если не найдено
      */
     public int[] searchBytes(int startRow, int startColumn, String[] sequence, boolean exactMatch) {

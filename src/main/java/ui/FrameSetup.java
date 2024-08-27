@@ -1,9 +1,11 @@
 package ui;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+
 public class FrameSetup {
     // Настройка основного фрейма приложения.
     public void setupFrame() {

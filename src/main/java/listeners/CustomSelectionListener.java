@@ -1,4 +1,5 @@
 package listeners;
+
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -23,8 +24,8 @@ public class CustomSelectionListener implements ListSelectionListener {
         }
 
         // Проверка условий для сохранения выбора по тз
-        if (selectedRows.length == 1 && (selectedColumns.length == 1 ||selectedColumns.length == 2 || selectedColumns.length == 4 || selectedColumns.length == 8)){
-            if (selectedColumns[selectedColumns.length - 1] - selectedColumns[0] != selectedColumns.length - 1){
+        if (selectedRows.length == 1 && (selectedColumns.length == 1 || selectedColumns.length == 2 || selectedColumns.length == 4 || selectedColumns.length == 8)) {
+            if (selectedColumns[selectedColumns.length - 1] - selectedColumns[0] != selectedColumns.length - 1) {
                 table.clearSelection();
             }
         } else {

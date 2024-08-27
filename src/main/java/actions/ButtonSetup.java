@@ -10,6 +10,7 @@ import ui.BinTableModel;
 import ui.CellInsertionDialog;
 import ui.MyCellEditor;
 import utils.ButtonUtils;
+
 public class ButtonSetup {
 
     private static String[][] copiedBlock;

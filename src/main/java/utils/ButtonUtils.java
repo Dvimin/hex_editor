@@ -1,4 +1,5 @@
 package utils;
+
 import ui.BinTableModel;
 
 import javax.swing.*;

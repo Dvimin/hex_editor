@@ -1,4 +1,5 @@
 package ui;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -10,13 +11,14 @@ public class CellInsertionDialog {
 
     /**
      * Отображает диалоговое окно для вставки ячеек в таблицу.
-     * @param frame родительское окно
-     * @param binTable таблица, в которую вставляются ячейки
-     * @param selectedRow выбранная строка в таблице
+     *
+     * @param frame          родительское окно
+     * @param binTable       таблица, в которую вставляются ячейки
+     * @param selectedRow    выбранная строка в таблице
      * @param selectedColumn выбранный столбец в таблице
-     * @param numberOfCells количество ячеек для вставки
-     * @param title заголовок диалогового окна
-     * @param insertAction действие вставки, обработчик ActionListener
+     * @param numberOfCells  количество ячеек для вставки
+     * @param title          заголовок диалогового окна
+     * @param insertAction   действие вставки, обработчик ActionListener
      */
     public static void showDialog(JFrame frame, JTable binTable, int selectedRow, int selectedColumn, int numberOfCells, String title, ActionListener insertAction) {
         dialog = new JDialog(frame, title, true);

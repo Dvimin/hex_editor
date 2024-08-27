@@ -1,4 +1,5 @@
 package ui;
+
 import javax.swing.*;
 
 // Класс MyCellEditor расширяет DefaultCellEditor для работы с ячейками таблицы.

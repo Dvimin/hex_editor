@@ -1,14 +1,15 @@
 package ui;
+
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 
 public class BinTableModel extends AbstractTableModel {
     private int columnCount = 17;
-    private ArrayList<String []> dataArrayList;
+    private ArrayList<String[]> dataArrayList;
 
 
-    public BinTableModel(){
-        dataArrayList = new ArrayList<String []>();
+    public BinTableModel() {
+        dataArrayList = new ArrayList<String[]>();
     }
 
     @Override
@@ -30,7 +31,7 @@ public class BinTableModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int columnIndex) {
-        if (columnIndex == 0){
+        if (columnIndex == 0) {
             return "";
         } else {
             return String.format("%02X", columnIndex - 1);
@@ -156,6 +157,7 @@ public class BinTableModel extends AbstractTableModel {
             }
         }
     }
+
     // для вставки пустой ячейки слева
     public void insertCellLeftAndShift(int selectedRow, int selectedColumn) {
         if (selectedRow == 0 && selectedColumn == 1) {
@@ -174,7 +176,7 @@ public class BinTableModel extends AbstractTableModel {
         String firstCellValue = getValueAt(row, 1).toString();
 
         for (int j = 1; j < columnCount - 1; j++) {
-            String cellValue = getValueAt(row, j +1).toString();
+            String cellValue = getValueAt(row, j + 1).toString();
             setValueAt(cellValue, row, j);
         }
 
@@ -200,7 +202,7 @@ public class BinTableModel extends AbstractTableModel {
         int lastRow = getRowCount() - 1;
         int lastColumn = getColumnCount() - 1;
         String element = "";
-        for (int row = lastRow; row > selectedRow; row--){
+        for (int row = lastRow; row > selectedRow; row--) {
             element = shiftAllRowLeft(row, element);
         }
         shiftSelectedRowLeft(selectedRow, selectedColumn, element);
@@ -238,7 +240,7 @@ public class BinTableModel extends AbstractTableModel {
 
     @Override
     public String getValueAt(int rowIndex, int columnIndex) {
-        String []rows = dataArrayList.get(rowIndex);
+        String[] rows = dataArrayList.get(rowIndex);
         return rows[columnIndex];
     }
 

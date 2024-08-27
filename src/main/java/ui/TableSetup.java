@@ -24,8 +24,9 @@ public class TableSetup {
 
     /**
      * Метод setupTable настраивает таблицу с заданным фреймом и моделью данных.
+     *
      * @param frame фрейм, в который встраивается таблица
-     * @param btm модель данных для таблицы
+     * @param btm   модель данных для таблицы
      */
     public void setupTable(JFrame frame, BinTableModel btm) {
         JTable binTable = new JTable(btm) {
