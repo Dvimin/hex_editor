@@ -12,9 +12,11 @@ import java.nio.file.Files;
 
 public class FileActions {
 
-    private static final int PAGE_SIZE = 512; // Размер страницы
+    private static final int PAGE_SIZE = 256; // Размер страницы
     private File currentFile;
     private RandomAccessFile raf;
+    private int currentPage = 0;
+    private int totalPages = 0;
 
     // Открытие файла и загрузка первой страницы в модель таблицы
     public void openFile(BinTableModel btm, ActionEvent actionEvent) {
@@ -24,6 +26,7 @@ public class FileActions {
             currentFile = fileChooser.getSelectedFile();
             try {
                 raf = new RandomAccessFile(currentFile, "r");
+                totalPages = calculateTotalPages();
                 loadPage(btm, 0);
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Ошибка чтения файла: " + e.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
@@ -32,7 +35,7 @@ public class FileActions {
         }
     }
 
-    // Загрузка страницы по номеру
+    // Метод для загрузки страницы по номеру
     private void loadPage(BinTableModel btm, int pageNumber) throws IOException {
         btm.clearData();
         long offset = pageNumber * PAGE_SIZE;
@@ -48,9 +51,44 @@ public class FileActions {
                 btm.addData(pageData);
             }
         }
+        currentPage = pageNumber;
     }
 
-    // Метод для загрузки тестового файла в модель таблицы.
+    // Переход на следующую страницу
+    public void nextPage(BinTableModel btm) {
+        if (currentPage < totalPages - 1) {
+            try {
+                loadPage(btm, currentPage + 1);
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Ошибка при загрузке следующей страницы: " + e.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Вы на последней странице.", "Информация", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    // Переход на предыдущую страницу
+    public void previousPage(BinTableModel btm) {
+        if (currentPage > 0) {
+            try {
+                loadPage(btm, currentPage - 1);
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Ошибка при загрузке предыдущей страницы: " + e.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Вы на первой странице.", "Информация", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    // Метод для подсчета общего количества страниц
+    private int calculateTotalPages() throws IOException {
+        long fileSize = raf.length();
+        return (int) Math.ceil((double) fileSize / PAGE_SIZE);
+    }
+
+    // Метод для загрузки тестового файла в модель таблицы
     public void setupTestFile(BinTableModel btm) {
         File file = new File("src/main/resources/test.txt");
         if (file.exists()) {
@@ -68,6 +106,7 @@ public class FileActions {
     public void openFileDirectly(BinTableModel btm, File file) throws IOException {
         currentFile = file;
         raf = new RandomAccessFile(currentFile, "r");
+        totalPages = calculateTotalPages();
         loadPage(btm, 0);
     }
 
