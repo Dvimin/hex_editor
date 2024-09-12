@@ -380,6 +380,7 @@ public class ButtonSetup {
         previousPageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                fileActions.previousPage(btm);
             }
         });
 
@@ -387,6 +388,7 @@ public class ButtonSetup {
         nextPageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                fileActions.nextPage(btm);
             }
         });
 
