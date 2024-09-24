@@ -33,6 +33,9 @@ public class ButtonSetup {
         JButton emptyButton = new JButton();
         JButton previousPageButton = new JButton("Предыдущая страница (←)");
         JButton nextPageButton = new JButton("(→) Следующая страница");
+        JButton openFileButton = new JButton("Открыть файл");
+        JButton saveFileButton = new JButton("Сохранить файл");
+
         binTable.changeSelection(0, 1, false, false);
 
         // Настройка бокса для выбора количества ячеек при вставке справа
@@ -391,13 +394,27 @@ public class ButtonSetup {
                 fileActions.nextPage(btm);
             }
         });
+        openFileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                fileActions.openFile(btm, actionEvent);
+            }
+        });
+
+        saveFileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                fileActions.saveFile(actionEvent, btm);
+            }
+        });
+
 
         // Настройка панели с кнопками
         JPanel buttonPanel = new JPanel(new GridBagLayout());
         Component[] components = {editButton, resetButton, copyBlockButton, deleteButton, pasteWithoutShiftButton, byteSearchButton,
                 cutBlockWithShiftButton, cutBlockWithResetButton, pasteWithShiftLeftButton, pasteWithShiftRightButton,
                 insertCellLeftButton, insertCellLeftComboBox, insertCellRightButton, insertCellRightComboBox,
-                clearButton, emptyButton, previousPageButton, nextPageButton};
+                clearButton, emptyButton, previousPageButton, nextPageButton, emptyButton, emptyButton, openFileButton, saveFileButton};
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(1, 1, 1, 1);
         gbc.fill = GridBagConstraints.HORIZONTAL;
