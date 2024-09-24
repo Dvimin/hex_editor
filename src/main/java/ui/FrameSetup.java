@@ -19,8 +19,7 @@ public class FrameSetup {
 
         BinTableModel btm = new BinTableModel();
         FileActions fileActions = new FileActions();
-        fileActions.setupTestFile(btm); // Вызов метода для загрузки тестового файла
-
+//        fileActions.setupTestFile(btm); // Вызов метода для загрузки тестового файла
 
         TableSetup tableSetup = new TableSetup();
         tableSetup.setupTable(frame, btm);
