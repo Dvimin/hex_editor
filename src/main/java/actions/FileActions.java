@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 public class FileActions {
 
@@ -24,6 +26,7 @@ public class FileActions {
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             currentFile = fileChooser.getSelectedFile();
             try {
+                createFileCopy(currentFile);
                 openAndLoadFile(btm);
             } catch (IOException e) {
                 showErrorDialog("Ошибка чтения файла: ", e);
@@ -31,11 +34,18 @@ public class FileActions {
         }
     }
 
+    // Метод для создания копии файла
+    private void createFileCopy(File file) throws IOException {
+        File copy = new File(file.getAbsolutePath() + ".bak");
+        Files.copy(file.toPath(), copy.toPath(), StandardCopyOption.REPLACE_EXISTING);
+//        JOptionPane.showMessageDialog(null, "Создана копия файла: " + copy.getAbsolutePath(), "Копирование завершено", JOptionPane.INFORMATION_MESSAGE);
+    }
+
     // Открытие файла и расчет количества страниц
     private void openAndLoadFile(BinTableModel btm) throws IOException {
         raf = new RandomAccessFile(currentFile, "r");
         totalPages = calculateTotalPages();
-        loadPage(btm, 0); // Загрузка первой страницы
+        loadPage(btm, 0);
     }
 
     // Метод для загрузки страницы по номеру
