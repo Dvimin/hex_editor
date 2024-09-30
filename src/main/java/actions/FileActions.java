@@ -9,12 +9,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 public class FileActions {
 
     private static final int PAGE_SIZE = 256; // Размер страницы
     private File currentFile;
+    private File backupFile;
     private RandomAccessFile raf;
     private int currentPage = 0;
     private int totalPages = 0;
@@ -24,6 +27,7 @@ public class FileActions {
         JFileChooser fileChooser = new JFileChooser();
         int returnValue = fileChooser.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
+            closeAndDeleteBackup();
             currentFile = fileChooser.getSelectedFile();
             try {
                 createFileCopy(currentFile);
@@ -34,11 +38,16 @@ public class FileActions {
         }
     }
 
-    // Метод для создания копии файла
+    // Метод для создания копии файла в папке backup
     private void createFileCopy(File file) throws IOException {
-        File copy = new File(file.getAbsolutePath() + ".bak");
-        Files.copy(file.toPath(), copy.toPath(), StandardCopyOption.REPLACE_EXISTING);
-//        JOptionPane.showMessageDialog(null, "Создана копия файла: " + copy.getAbsolutePath(), "Копирование завершено", JOptionPane.INFORMATION_MESSAGE);
+        String projectDir = System.getProperty("user.dir");
+        Path backupDir = Paths.get(projectDir, "backup");
+        if (!Files.exists(backupDir)) {
+            Files.createDirectory(backupDir);
+        }
+        Path backupFilePath = Paths.get(backupDir.toString(), file.getName() + ".bak");
+        backupFile = backupFilePath.toFile();
+        Files.copy(file.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
     // Открытие файла и расчет количества страниц
@@ -108,25 +117,26 @@ public class FileActions {
             try (FileOutputStream fos = new FileOutputStream(selectedFile)) {
                 fos.write(btm.getAllData());
                 JOptionPane.showMessageDialog(null, "Файл сохранен: " + selectedFile.getAbsolutePath(), "Сохранено", JOptionPane.INFORMATION_MESSAGE);
+                closeAndDeleteBackup();
             } catch (IOException e) {
                 showErrorDialog("Ошибка при сохранении файла: ", e);
             }
         }
     }
 
-    // Общий метод для обработки ошибок
-    private void showErrorDialog(String message, Exception e) {
-        JOptionPane.showMessageDialog(null, message + e.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
-        e.printStackTrace();
-    }
-
     // Закрытие файла и выход из приложения
     public void exit() {
-        closeFile();
+        closeAndDeleteBackup();
         System.exit(0);
     }
 
-    // Закрытие текущего файла
+    // Закрытие текущего файла и удаление бэкапа
+    public void closeAndDeleteBackup() {
+        closeFile();
+        deleteBackupFile();
+    }
+
+    // Закрытие файла
     private void closeFile() {
         if (raf != null) {
             try {
@@ -136,5 +146,29 @@ public class FileActions {
                 showErrorDialog("Ошибка при закрытии файла: ", e);
             }
         }
+    }
+
+    // Удаление бэкап-файла
+    private void deleteBackupFile() {
+        if (backupFile != null && backupFile.exists()) {
+            System.out.println("Попытка удалить файл: " + backupFile.getAbsolutePath());
+            boolean deleted = backupFile.delete();
+            if (!deleted) {
+                System.out.println("Не удалось удалить бэкап файл.");
+                showErrorDialog("Ошибка при удалении бэкап файла.", new IOException("Не удалось удалить бэкап файл."));
+            } else {
+                System.out.println("Файл успешно удалён.");
+            }
+            backupFile = null;
+        } else {
+            System.out.println("Бэкап-файл не существует или уже был удалён.");
+        }
+    }
+
+
+    // Общий метод для обработки ошибок
+    private void showErrorDialog(String message, Exception e) {
+        JOptionPane.showMessageDialog(null, message + e.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
     }
 }
