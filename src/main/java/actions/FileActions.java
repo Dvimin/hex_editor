@@ -42,12 +42,28 @@ public class FileActions {
     private void createFileCopy(File file) throws IOException {
         String projectDir = System.getProperty("user.dir");
         Path backupDir = Paths.get(projectDir, "backup");
+        clearBackupDirectory(backupDir);
         if (!Files.exists(backupDir)) {
             Files.createDirectory(backupDir);
         }
         Path backupFilePath = Paths.get(backupDir.toString(), file.getName() + ".bak");
         backupFile = backupFilePath.toFile();
         Files.copy(file.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    // Метод для очистки папки backup
+    private void clearBackupDirectory(Path backupDir) throws IOException {
+        if (Files.exists(backupDir)) {
+            Files.walk(backupDir)
+                    .filter(Files::isRegularFile)
+                    .forEach(file -> {
+                        try {
+                            Files.delete(file);
+                        } catch (IOException e) {
+                            showErrorDialog("Ошибка при удалении файла из папки backup: ", e);
+                        }
+                    });
+        }
     }
 
     // Открытие файла и расчет количества страниц
