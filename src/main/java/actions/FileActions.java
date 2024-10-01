@@ -4,10 +4,7 @@ import ui.BinTableModel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -124,20 +121,67 @@ public class FileActions {
         return (int) Math.ceil((double) raf.length() / PAGE_SIZE);
     }
 
-    // Сохранение данных модели таблицы в файл
-    public void saveFile(ActionEvent actionEvent, BinTableModel btm) {
+    // Сохранение текущей страницы, включая все до и после нее
+    public void saveCurrentPageWithContext(ActionEvent actionEvent, BinTableModel btm) {
         JFileChooser fileChooser = new JFileChooser();
         int returnValue = fileChooser.showSaveDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
-            try (FileOutputStream fos = new FileOutputStream(selectedFile)) {
-                fos.write(btm.getAllData());
+            if (selectedFile.exists()) {
+                int response = JOptionPane.showConfirmDialog(null,
+                        "Файл уже существует. Перезаписать?",
+                        "Предупреждение",
+                        JOptionPane.YES_NO_OPTION);
+                if (response != JOptionPane.YES_OPTION) {
+                    selectedFile = createNewFileWithSuffix(selectedFile);
+                }
+            }
+
+            try (FileOutputStream fos = new FileOutputStream(selectedFile);
+                 BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+
+                for (int pageNumber = 0; pageNumber < currentPage; pageNumber++) {
+                    byte[] pageData = loadPageData(pageNumber);
+                    bos.write(pageData);
+                }
+
+                byte[] currentPageData = btm.getAllData();
+                bos.write(currentPageData);
+
+                for (int pageNumber = currentPage + 1; pageNumber < totalPages; pageNumber++) {
+                    byte[] pageData = loadPageData(pageNumber);
+                    bos.write(pageData);
+                }
+                bos.flush();
                 JOptionPane.showMessageDialog(null, "Файл сохранен: " + selectedFile.getAbsolutePath(), "Сохранено", JOptionPane.INFORMATION_MESSAGE);
-                closeAndDeleteBackup();
             } catch (IOException e) {
                 showErrorDialog("Ошибка при сохранении файла: ", e);
             }
         }
+    }
+
+
+    // Метод для загрузки данных страницы без обновления UI
+    private byte[] loadPageData(int pageNumber) throws IOException {
+        long offset = pageNumber * PAGE_SIZE;
+        raf.seek(offset);
+        byte[] pageData = new byte[PAGE_SIZE];
+        int bytesRead = raf.read(pageData);
+        return trimData(pageData, bytesRead);
+    }
+
+    // Метод для создания нового файла с суффиксом, если файл уже существует
+    private File createNewFileWithSuffix(File originalFile) {
+        String originalPath = originalFile.getAbsolutePath();
+        String newFilePath;
+        int counter = 1;
+
+        do {
+            newFilePath = originalPath.replaceFirst("(\\.\\w+)?$", "(" + counter + ")$1");
+            counter++;
+        } while (new File(newFilePath).exists());
+
+        return new File(newFilePath);
     }
 
     // Закрытие файла и выход из приложения
@@ -180,7 +224,6 @@ public class FileActions {
             System.out.println("Бэкап-файл не существует или уже был удалён.");
         }
     }
-
 
     // Общий метод для обработки ошибок
     private void showErrorDialog(String message, Exception e) {

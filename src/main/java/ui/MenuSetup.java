@@ -49,7 +49,7 @@ public class MenuSetup {
         saveMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                fileActions.saveFile(actionEvent, btm);
+                fileActions.saveCurrentPageWithContext(actionEvent, btm);
             }
         });
 
