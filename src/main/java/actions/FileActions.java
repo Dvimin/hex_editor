@@ -5,10 +5,7 @@ import ui.BinTableModel;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 
 public class FileActions {
 
@@ -18,6 +15,29 @@ public class FileActions {
     private RandomAccessFile raf;
     private int currentPage = 0;
     private int totalPages = 0;
+
+    public void createAndOpenInitialFile(BinTableModel btm) {
+        createInitialFileInResources();
+        try {
+            Path resourceFilePath = Paths.get("src/main/resources/InitialFile.txt");
+            currentFile = resourceFilePath.toFile();
+            openAndLoadFile(btm);
+        } catch (IOException e) {
+            showErrorDialog("Ошибка при открытии файла: ", e);
+        }
+    }
+
+    public void createInitialFileInResources() {
+        try {
+            Path resourceFilePath = Paths.get("src/main/resources/InitialFile.txt");
+
+            byte[] zeros = new byte[]{0x00};
+            Files.write(resourceFilePath, zeros, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            System.out.println("Файл создан: " + resourceFilePath.toString());
+        } catch (IOException e) {
+            showErrorDialog("Ошибка при создании файла в ресурсах: ", e);
+        }
+    }
 
     // Открытие файла и загрузка первой страницы в модель таблицы
     public void openFile(BinTableModel btm, ActionEvent actionEvent) {
@@ -154,6 +174,8 @@ public class FileActions {
                 }
                 bos.flush();
                 JOptionPane.showMessageDialog(null, "Файл сохранен: " + selectedFile.getAbsolutePath(), "Сохранено", JOptionPane.INFORMATION_MESSAGE);
+                createAndOpenInitialFile(btm);
+
             } catch (IOException e) {
                 showErrorDialog("Ошибка при сохранении файла: ", e);
             }
