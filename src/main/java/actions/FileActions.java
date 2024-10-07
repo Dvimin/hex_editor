@@ -3,6 +3,7 @@ package actions;
 import ui.BinTableModel;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
 import java.nio.file.*;
@@ -23,7 +24,7 @@ public class FileActions {
             currentFile = resourceFilePath.toFile();
             openAndLoadFile(btm);
         } catch (IOException e) {
-            showErrorDialog("Ошибка при открытии файла: ", e);
+            showErrorDialog(null, "Ошибка при открытии файла: ", e);
         }
     }
 
@@ -35,7 +36,7 @@ public class FileActions {
             Files.write(resourceFilePath, zeros, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             System.out.println("Файл создан: " + resourceFilePath.toString());
         } catch (IOException e) {
-            showErrorDialog("Ошибка при создании файла в ресурсах: ", e);
+            showErrorDialog(null, "Ошибка при создании файла в ресурсах: ", e);
         }
     }
 
@@ -50,7 +51,7 @@ public class FileActions {
                 createFileCopy(currentFile);
                 openAndLoadFile(btm);
             } catch (IOException e) {
-                showErrorDialog("Ошибка чтения файла: ", e);
+                showErrorDialog(null, "Ошибка чтения файла: ", e);
             }
         }
     }
@@ -63,10 +64,67 @@ public class FileActions {
         if (!Files.exists(backupDir)) {
             Files.createDirectory(backupDir);
         }
-        Path backupFilePath = Paths.get(backupDir.toString(), file.getName() + ".bak");
+        Path backupFilePath = Paths.get(backupDir.toString(), "backup.txt");
         backupFile = backupFilePath.toFile();
         Files.copy(file.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        System.out.println("Бэкап-файл создан.");
     }
+
+    // Открытие файла с определённой страницы
+    public void openFileAtPage(BinTableModel btm) {
+        if (currentFile != null) {
+            try {
+                openAndLoadFileAtPage(btm, currentPage);
+            } catch (IOException e) {
+                showErrorDialog(null, "Ошибка чтения файла: ", e);
+            }
+        } else {
+            showErrorDialog(null, "Файл не был сохранён или открыт ранее.", new Exception("Нет текущего файла."));
+        }
+    }
+
+
+    // Открытие файла и загрузка указанной страницы
+    private void openAndLoadFileAtPage(BinTableModel btm, int pageNumber) throws IOException {
+        raf = new RandomAccessFile(currentFile, "r");
+        totalPages = calculateTotalPages();
+        if (pageNumber >= 0 && pageNumber < totalPages) {
+            loadPage(btm, pageNumber);
+        } else {
+            showErrorDialog(null, "Некорректный номер страницы. Всего страниц: " + totalPages, new IllegalArgumentException("Некорректный номер страницы"));
+            loadPage(btm, 0);
+        }
+    }
+
+
+    // Автоматическое сохранение текущей страницы, включая контекст, без создания нового файла
+    public void autoSaveCurrentPageWithContext(BinTableModel btm) {
+        Path backupDirectoryPath = Paths.get("backup");
+        Path backupFilePath = backupDirectoryPath.resolve("backup.txt");
+        File backupFile = backupFilePath.toFile();
+        if (!backupFile.exists()) {
+            System.out.println("Файл бэкапа по пути не найден: " + backupFile.getAbsolutePath());
+            return;
+        }
+        try (FileOutputStream fos = new FileOutputStream(backupFile);
+             BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+            for (int pageNumber = 0; pageNumber < currentPage; pageNumber++) {
+                byte[] pageData = loadPageData(pageNumber);
+                bos.write(pageData);
+            }
+            byte[] currentPageData = btm.getAllData();
+            bos.write(currentPageData);
+            for (int pageNumber = currentPage + 1; pageNumber < totalPages; pageNumber++) {
+                byte[] pageData = loadPageData(pageNumber);
+                bos.write(pageData);
+            }
+            bos.flush();
+            System.out.println("Файл бэкапа успешно перезаписан: " + backupFile.getAbsolutePath());
+        } catch (IOException e) {
+            showErrorDialog(null, "Ошибка при перезаписи файла бэкапа: ", e);
+        }
+    }
+
 
     // Метод для очистки папки backup
     private void clearBackupDirectory(Path backupDir) throws IOException {
@@ -77,7 +135,7 @@ public class FileActions {
                         try {
                             Files.delete(file);
                         } catch (IOException e) {
-                            showErrorDialog("Ошибка при удалении файла из папки backup: ", e);
+                            showErrorDialog(null, "Ошибка при удалении файла из папки backup: ", e);
                         }
                     });
         }
@@ -129,7 +187,7 @@ public class FileActions {
             try {
                 loadPage(btm, newPage);
             } catch (IOException e) {
-                showErrorDialog("Ошибка при загрузке страницы: ", e);
+                showErrorDialog(null, "Ошибка при загрузке страницы: ", e);
             }
         } else {
             JOptionPane.showMessageDialog(null, boundaryMessage, "Информация", JOptionPane.INFORMATION_MESSAGE);
@@ -177,7 +235,7 @@ public class FileActions {
                 createAndOpenInitialFile(btm);
 
             } catch (IOException e) {
-                showErrorDialog("Ошибка при сохранении файла: ", e);
+                showErrorDialog(null, "Ошибка при сохранении файла: ", e);
             }
         }
     }
@@ -225,7 +283,7 @@ public class FileActions {
                 raf.close();
                 raf = null;
             } catch (IOException e) {
-                showErrorDialog("Ошибка при закрытии файла: ", e);
+                showErrorDialog(null, "Ошибка при закрытии файла: ", e);
             }
         }
     }
@@ -237,7 +295,7 @@ public class FileActions {
             boolean deleted = backupFile.delete();
             if (!deleted) {
                 System.out.println("Не удалось удалить бэкап файл.");
-                showErrorDialog("Ошибка при удалении бэкап файла.", new IOException("Не удалось удалить бэкап файл."));
+                showErrorDialog(null, "Ошибка при удалении бэкап файла.", new IOException("Не удалось удалить бэкап файл."));
             } else {
                 System.out.println("Файл успешно удалён.");
             }
@@ -248,8 +306,9 @@ public class FileActions {
     }
 
     // Общий метод для обработки ошибок
-    private void showErrorDialog(String message, Exception e) {
-        JOptionPane.showMessageDialog(null, message + e.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+    private void showErrorDialog(Component parent, String message, Exception e) {
+        String fullMessage = String.format("%s%n%s", message, e.getMessage());
+        JOptionPane.showMessageDialog(parent, fullMessage, "Ошибка", JOptionPane.ERROR_MESSAGE);
         e.printStackTrace();
     }
 }

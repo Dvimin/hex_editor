@@ -167,8 +167,11 @@ public class ButtonSetup {
                             model.deleteCellAndShift(selectedRows[i], selectedColumns[j]);
                         }
                     }
+                    model.fireTableDataChanged();
                     binTable.repaint();
                     binTable.changeSelection(selectedRows[0], selectedColumns[0], false, false);
+                    fileActions.autoSaveCurrentPageWithContext(btm);
+                    fileActions.openFileAtPage(btm);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку для удаления.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
