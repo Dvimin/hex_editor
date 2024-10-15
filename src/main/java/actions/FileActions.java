@@ -116,21 +116,7 @@ public class FileActions {
         try (FileOutputStream fos = new FileOutputStream(tempBackupFile);
              BufferedOutputStream bos = new BufferedOutputStream(fos)) {
 
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            for (int pageNumber = 0; pageNumber < currentPage; pageNumber++) {
-                byte[] pageData = loadPageData(pageNumber);
-                buffer.write(pageData);
-            }
-
-            byte[] currentPageData = btm.getAllData();
-            buffer.write(currentPageData);
-
-            for (int pageNumber = currentPage + 1; pageNumber < totalPages; pageNumber++) {
-                byte[] pageData = loadPageData(pageNumber);
-                buffer.write(pageData);
-            }
-
-            bos.write(buffer.toByteArray());
+            writeAllPages(bos, btm);
             bos.flush();
         } catch (IOException e) {
             showErrorDialog(null, "Ошибка при записи временного файла: ", e);
@@ -254,19 +240,7 @@ public class FileActions {
 
             try (FileOutputStream fos = new FileOutputStream(selectedFile);
                  BufferedOutputStream bos = new BufferedOutputStream(fos)) {
-
-                for (int pageNumber = 0; pageNumber < currentPage; pageNumber++) {
-                    byte[] pageData = loadPageData(pageNumber);
-                    bos.write(pageData);
-                }
-
-                byte[] currentPageData = btm.getAllData();
-                bos.write(currentPageData);
-
-                for (int pageNumber = currentPage + 1; pageNumber < totalPages; pageNumber++) {
-                    byte[] pageData = loadPageData(pageNumber);
-                    bos.write(pageData);
-                }
+                writeAllPages(bos, btm);
                 bos.flush();
                 JOptionPane.showMessageDialog(null, "Файл сохранен: " + selectedFile.getAbsolutePath(), "Сохранено", JOptionPane.INFORMATION_MESSAGE);
                 createAndOpenInitialFile(btm);
@@ -277,6 +251,21 @@ public class FileActions {
         }
     }
 
+    // Метод для записи всех страниц в BufferedOutputStream
+    private void writeAllPages(BufferedOutputStream bos, BinTableModel btm) throws IOException {
+        for (int pageNumber = 0; pageNumber < currentPage; pageNumber++) {
+            byte[] pageData = loadPageData(pageNumber);
+            bos.write(pageData);
+        }
+
+        byte[] currentPageData = btm.getAllData();
+        bos.write(currentPageData);
+
+        for (int pageNumber = currentPage + 1; pageNumber < totalPages; pageNumber++) {
+            byte[] pageData = loadPageData(pageNumber);
+            bos.write(pageData);
+        }
+    }
 
     // Метод для загрузки данных страницы без обновления UI
     private byte[] loadPageData(int pageNumber) throws IOException {
