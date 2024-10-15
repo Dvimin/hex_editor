@@ -170,13 +170,15 @@ public class BinTableModel extends AbstractTableModel {
         insertCellRightAndShift(selectedRow, selectedColumn);
     }
 
-    //для удаления ячейки и последующего сдвига
+    // для удаления ячейки и последующего сдвига
     public String shiftAllRowLeft(int row, String element) {
         int columnCount = getColumnCount();
-        String firstCellValue = getValueAt(row, 1).toString();
+        Object firstCellValueObj = getValueAt(row, 1);
+        String firstCellValue = firstCellValueObj != null ? firstCellValueObj.toString() : "";
 
         for (int j = 1; j < columnCount - 1; j++) {
-            String cellValue = getValueAt(row, j + 1).toString();
+            Object nextCellValueObj = getValueAt(row, j + 1);
+            String cellValue = nextCellValueObj != null ? nextCellValueObj.toString() : "";
             setValueAt(cellValue, row, j);
         }
 
