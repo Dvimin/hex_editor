@@ -35,6 +35,7 @@ public class ButtonSetup {
         JButton nextPageButton = new JButton("(→) Следующая страница");
         JButton openFileButton = new JButton("Открыть файл");
         JButton saveFileButton = new JButton("Сохранить файл");
+        JLabel navigationLabel = new JLabel("Page: " + fileActions.getCurrentPage() + " of " + fileActions.getTotalPages());
 
         binTable.changeSelection(0, 1, false, false);
 
@@ -70,6 +71,7 @@ public class ButtonSetup {
                             fileActions.autoOpenFileAtPage(btm);
                             binTable.changeSelection(selectedRow, selectedColumn + numberOfCells - 1, false, false);
                             dialog.dispose();
+                            updateNavigationLabel(fileActions, navigationLabel);
                         }
                     });
                 } else {
@@ -106,6 +108,7 @@ public class ButtonSetup {
                             fileActions.autoSaveFileAtPage(btm);
                             fileActions.autoOpenFileAtPage(btm);
                             dialog.dispose();
+                            updateNavigationLabel(fileActions, navigationLabel);
                         }
                     });
                 } else {
@@ -178,6 +181,7 @@ public class ButtonSetup {
                     fileActions.autoSaveFileAtPage(btm);
                     fileActions.autoOpenFileAtPage(btm);
                     binTable.changeSelection(selectedRows[0], selectedColumns[0], false, false);
+                    updateNavigationLabel(fileActions, navigationLabel);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку для удаления.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
@@ -229,6 +233,7 @@ public class ButtonSetup {
                     fileActions.autoSaveFileAtPage(btm);
                     fileActions.autoOpenFileAtPage(btm);
                     binTable.changeSelection(selectedRows[0], selectedColumns[0], false, false);
+                    updateNavigationLabel(fileActions, navigationLabel);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
@@ -316,6 +321,7 @@ public class ButtonSetup {
                         fileActions.autoSaveFileAtPage(btm);
                         fileActions.autoOpenFileAtPage(btm);
                         binTable.changeSelection(selectedRow, selectedColumn, false, false);
+                        updateNavigationLabel(fileActions, navigationLabel);
                     } else {
                         JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                     }
@@ -346,6 +352,7 @@ public class ButtonSetup {
                         fileActions.autoSaveFileAtPage(btm);
                         fileActions.autoOpenFileAtPage(btm);
                         binTable.changeSelection(selectedRow, selectedColumn, false, false);
+                        updateNavigationLabel(fileActions, navigationLabel);
                     } else {
                         JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                     }
@@ -365,6 +372,7 @@ public class ButtonSetup {
                 for (int i = 0; i < rowCount; i++) {
                     for (int j = 1; j < columnCount; j++) {
                         btm.setValueAt("", i, j);
+                        updateNavigationLabel(fileActions, navigationLabel);
                     }
                 }
             }
@@ -405,6 +413,7 @@ public class ButtonSetup {
                 fileActions.autoSaveFileAtPage(btm);
                 fileActions.autoOpenFileAtPage(btm);
                 fileActions.previousPage(btm);
+                updateNavigationLabel(fileActions, navigationLabel);
             }
         });
 
@@ -415,6 +424,7 @@ public class ButtonSetup {
                 fileActions.autoSaveFileAtPage(btm);
                 fileActions.autoOpenFileAtPage(btm);
                 fileActions.nextPage(btm);
+                updateNavigationLabel(fileActions, navigationLabel);
             }
         });
 
@@ -423,6 +433,7 @@ public class ButtonSetup {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 fileActions.openFile(btm, actionEvent);
+                updateNavigationLabel(fileActions, navigationLabel);
             }
         });
 
@@ -431,6 +442,7 @@ public class ButtonSetup {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 fileActions.saveCurrentPageWithContext(actionEvent, btm);
+                updateNavigationLabel(fileActions, navigationLabel);
             }
         });
 
@@ -439,7 +451,7 @@ public class ButtonSetup {
         Component[] components = {editButton, resetButton, copyBlockButton, deleteButton, pasteWithoutShiftButton, byteSearchButton,
                 cutBlockWithShiftButton, cutBlockWithResetButton, pasteWithShiftLeftButton, pasteWithShiftRightButton,
                 insertCellLeftButton, insertCellLeftComboBox, insertCellRightButton, insertCellRightComboBox,
-                clearButton, emptyButton, previousPageButton, nextPageButton, emptyButton, emptyButton, openFileButton, saveFileButton};
+                clearButton, emptyButton, previousPageButton, nextPageButton,navigationLabel, emptyButton, openFileButton, saveFileButton};
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(1, 1, 1, 1);
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -453,4 +465,12 @@ public class ButtonSetup {
 
         return buttonPanel;
     }
+
+    //Метод для обновления панели навигации
+    private static void updateNavigationLabel(FileActions fileActions, JLabel navigationLabel) {
+        int currentPage = fileActions.getCurrentPage();
+        int totalPages = fileActions.getTotalPages();
+        navigationLabel.setText("Page: " + currentPage + " of " + totalPages);
+    }
+
 }

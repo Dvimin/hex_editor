@@ -339,6 +339,15 @@ public class FileActions {
         }
     }
 
+    // Возвращает
+    public int getTotalPages() {
+        return (totalPages > 0) ? totalPages : 1;
+    }
+
+    public int getCurrentPage() {
+        return currentPage + 1;
+    }
+
     // Общий метод для обработки ошибок
     private void showErrorDialog(Component parent, String message, Exception e) {
         String fullMessage = String.format("%s%n%s", message, e.getMessage());
