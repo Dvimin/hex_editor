@@ -65,8 +65,9 @@ public class ButtonSetup {
                                 nextColumn = nextCell[1];
                                 ((BinTableModel) binTable.getModel()).setValueAt(value, nextRow, nextColumn);
                             }
-
                             binTable.repaint();
+                            fileActions.autoSaveFileAtPage(btm);
+                            fileActions.autoOpenFileAtPage(btm);
                             binTable.changeSelection(selectedRow, selectedColumn + numberOfCells - 1, false, false);
                             dialog.dispose();
                         }
@@ -101,8 +102,9 @@ public class ButtonSetup {
                                 model.insertCellLeftAndShift(nextRow, nextColumn);
                                 model.setValueAt(value, nextRow, nextColumn);
                             }
-
                             binTable.repaint();
+                            fileActions.autoSaveFileAtPage(btm);
+                            fileActions.autoOpenFileAtPage(btm);
                             dialog.dispose();
                         }
                     });
@@ -126,6 +128,8 @@ public class ButtonSetup {
                     if (editorComponent != null) {
                         editorComponent.requestFocusInWindow();
                     }
+                    fileActions.autoSaveFileAtPage(btm);
+                    fileActions.autoOpenFileAtPage(btm);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку для редактирования.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
@@ -146,6 +150,8 @@ public class ButtonSetup {
                         }
                     }
                     binTable.repaint();
+                    fileActions.autoSaveFileAtPage(btm);
+                    fileActions.autoOpenFileAtPage(btm);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку для обнуления.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
@@ -169,9 +175,9 @@ public class ButtonSetup {
                     }
                     model.fireTableDataChanged();
                     binTable.repaint();
+                    fileActions.autoSaveFileAtPage(btm);
+                    fileActions.autoOpenFileAtPage(btm);
                     binTable.changeSelection(selectedRows[0], selectedColumns[0], false, false);
-                    fileActions.autoSaveCurrentPageWithContext(btm);
-                    fileActions.openFileAtPage(btm);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку для удаления.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
@@ -220,6 +226,8 @@ public class ButtonSetup {
                         }
                     }
                     binTable.repaint();
+                    fileActions.autoSaveFileAtPage(btm);
+                    fileActions.autoOpenFileAtPage(btm);
                     binTable.changeSelection(selectedRows[0], selectedColumns[0], false, false);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
@@ -245,6 +253,8 @@ public class ButtonSetup {
                         }
                     }
                     binTable.repaint();
+                    fileActions.autoSaveFileAtPage(btm);
+                    fileActions.autoOpenFileAtPage(btm);
                     binTable.changeSelection(selectedRows[0], selectedColumns[0], false, false);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
@@ -268,6 +278,8 @@ public class ButtonSetup {
                             }
                         }
                         binTable.repaint();
+                        fileActions.autoSaveFileAtPage(btm);
+                        fileActions.autoOpenFileAtPage(btm);
                     } else {
                         JOptionPane.showMessageDialog(frame,
                                 "Размер скопированного блока и выделенного участка не совпадают",
@@ -301,6 +313,8 @@ public class ButtonSetup {
                             }
                         }
                         binTable.repaint();
+                        fileActions.autoSaveFileAtPage(btm);
+                        fileActions.autoOpenFileAtPage(btm);
                         binTable.changeSelection(selectedRow, selectedColumn, false, false);
                     } else {
                         JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
@@ -329,6 +343,8 @@ public class ButtonSetup {
                             }
                         }
                         binTable.repaint();
+                        fileActions.autoSaveFileAtPage(btm);
+                        fileActions.autoOpenFileAtPage(btm);
                         binTable.changeSelection(selectedRow, selectedColumn, false, false);
                     } else {
                         JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
@@ -386,6 +402,8 @@ public class ButtonSetup {
         previousPageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                fileActions.autoSaveFileAtPage(btm);
+                fileActions.autoOpenFileAtPage(btm);
                 fileActions.previousPage(btm);
             }
         });
@@ -394,9 +412,13 @@ public class ButtonSetup {
         nextPageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                fileActions.autoSaveFileAtPage(btm);
+                fileActions.autoOpenFileAtPage(btm);
                 fileActions.nextPage(btm);
             }
         });
+
+        // Обработчик для открытия пользователем файла
         openFileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -404,13 +426,13 @@ public class ButtonSetup {
             }
         });
 
+        // Обработчик для сохранения пользователем файла
         saveFileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 fileActions.saveCurrentPageWithContext(actionEvent, btm);
             }
         });
-
 
         // Настройка панели с кнопками
         JPanel buttonPanel = new JPanel(new GridBagLayout());
