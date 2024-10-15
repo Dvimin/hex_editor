@@ -36,7 +36,6 @@ public class FileActions {
 
             byte[] zeros = new byte[]{0x00};
             Files.write(resourceFilePath, zeros, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-            System.out.println("Файл создан: " + resourceFilePath.toString());
         } catch (IOException e) {
             showErrorDialog(null, "Ошибка при создании файла в ресурсах: ", e);
         }
@@ -69,10 +68,9 @@ public class FileActions {
         Path backupFilePath = Paths.get(backupDir.toString(), "backup.txt");
         backupFile = backupFilePath.toFile();
         Files.copy(file.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        System.out.println("Бэкап-файл создан.");
     }
 
-    // Автоматическое открытие файла с определённой страницы
+    // Автоматическое открытие файла с определённой страницы файла backup
     public void autoOpenFileAtPage(BinTableModel btm) {
         Path backupDirectoryPath = Paths.get("backup");
         Path backupFilePath = backupDirectoryPath.resolve("backup.txt");
@@ -92,7 +90,7 @@ public class FileActions {
     }
 
 
-    // Открытие файла и загрузка указанной страницы
+    // Открытие файла и загрузка указанной страницы файла backup
     private void openAndLoadFileAtPage(BinTableModel btm, int pageNumber) throws IOException {
         if (raf != null) {
             raf.close();
@@ -107,7 +105,7 @@ public class FileActions {
         }
     }
 
-    // Автоматическое сохранение всех стариц
+    // Автоматическое сохранение всех стариц файла backup
     public void autoSaveFileAtPage(BinTableModel btm) {
         Path backupDirectoryPath = Paths.get("backup");
         Path backupFilePath = backupDirectoryPath.resolve("backup.txt");
@@ -134,50 +132,29 @@ public class FileActions {
 
             bos.write(buffer.toByteArray());
             bos.flush();
-            System.out.println("Временный файл бэкапа успешно записан: " + tempBackupFile.getAbsolutePath());
-
-            try (FileInputStream fis = new FileInputStream(tempBackupFile);
-                 FileOutputStream backupFos = new FileOutputStream(backupFile);
-                 BufferedOutputStream backupBos = new BufferedOutputStream(backupFos)) {
-
-                byte[] bufferCopy = new byte[1024];
-                int bytesRead;
-                while ((bytesRead = fis.read(bufferCopy)) != -1) {
-                    backupBos.write(bufferCopy, 0, bytesRead);
-                }
-
-                backupBos.flush();
-                System.out.println("Файл бэкапа успешно обновлён: " + backupFile.getAbsolutePath());
-
-            } catch (IOException e) {
-                showErrorDialog(null, "Ошибка при копировании данных во временный файл бэкапа: ", e);
-            }
-
-            System.out.println("Проверяем возможность удаления временного файла: " + tempBackupFile.getAbsolutePath());
-            if (tempBackupFile.exists()) {
-                System.out.println("Временный файл существует и его размер: " + tempBackupFile.length() + " байт");
-
-                if (tempBackupFile.delete()) {
-                    System.out.println("Временный файл успешно удалён.");
-                } else {
-                    System.out.println("Не удалось удалить временный файл. Причина: файл может быть занят другим процессом или у приложения нет прав.");
-                }
-            } else {
-                System.out.println("Временный файл не существует перед попыткой удаления.");
-            }
-            try {
-                Files.delete(tempBackupFilePath);
-                System.out.println("Временный файл успешно удалён.");
-            } catch (NoSuchFileException e) {
-                System.out.println("Временный файл не существует.");
-            } catch (DirectoryNotEmptyException e) {
-                System.out.println("Директория не пуста: " + e.getFile());
-            } catch (IOException e) {
-                System.out.println("Не удалось удалить временный файл. Причина: " + e.getMessage());
-            }
-
         } catch (IOException e) {
             showErrorDialog(null, "Ошибка при записи временного файла: ", e);
+            return;
+        }
+
+        try (FileInputStream fis = new FileInputStream(tempBackupFile);
+             FileOutputStream backupFos = new FileOutputStream(backupFile);
+             BufferedOutputStream backupBos = new BufferedOutputStream(backupFos)) {
+
+            byte[] bufferCopy = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = fis.read(bufferCopy)) != -1) {
+                backupBos.write(bufferCopy, 0, bytesRead);
+            }
+            backupBos.flush();
+
+        } catch (IOException e) {
+            showErrorDialog(null, "Ошибка при копировании данных во временный файл бэкапа: ", e);
+        }
+        try {
+            Files.delete(tempBackupFilePath);
+        } catch (IOException e) {
+            System.out.println("Не удалось удалить временный файл. Причина: " + e.getMessage());
         }
     }
 
@@ -366,17 +343,10 @@ public class FileActions {
     // Удаление бэкап-файла
     private void deleteBackupFile() {
         if (backupFile != null && backupFile.exists()) {
-            System.out.println("Попытка удалить файл: " + backupFile.getAbsolutePath());
-            boolean deleted = backupFile.delete();
-            if (!deleted) {
-                System.out.println("Не удалось удалить бэкап файл.");
+            if (!backupFile.delete()) {
                 showErrorDialog(null, "Ошибка при удалении бэкап файла.", new IOException("Не удалось удалить бэкап файл."));
-            } else {
-                System.out.println("Файл успешно удалён.");
             }
             backupFile = null;
-        } else {
-            System.out.println("Бэкап-файл не существует или уже был удалён.");
         }
     }
 
