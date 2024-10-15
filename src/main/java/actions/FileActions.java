@@ -261,9 +261,11 @@ public class FileActions {
         byte[] currentPageData = btm.getAllData();
         bos.write(currentPageData);
 
-        for (int pageNumber = currentPage + 1; pageNumber < totalPages; pageNumber++) {
-            byte[] pageData = loadPageData(pageNumber);
-            bos.write(pageData);
+        if (currentPage < totalPages - 1) {
+            for (int pageNumber = currentPage + 1; pageNumber < totalPages; pageNumber++) {
+                byte[] pageData = loadPageData(pageNumber);
+                bos.write(pageData);
+            }
         }
     }
 
