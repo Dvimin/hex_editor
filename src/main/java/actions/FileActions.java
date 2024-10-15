@@ -339,11 +339,12 @@ public class FileActions {
         }
     }
 
-    // Возвращает
+    // Возвращает общее количество старниц в открытом файле
     public int getTotalPages() {
         return (totalPages > 0) ? totalPages : 1;
     }
 
+    // Возвращает номер текущей открытой страницы в открытом файле
     public int getCurrentPage() {
         return currentPage + 1;
     }
