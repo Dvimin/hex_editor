@@ -53,9 +53,13 @@ public class BinTableModel extends AbstractTableModel {
         ArrayList<Byte> byteList = new ArrayList<>();
         for (String[] row : dataArrayList) {
             for (int i = 1; i < columnCount; i++) {
-                if (!row[i].isEmpty()) {
-                    byte value = (byte) Integer.parseInt(row[i], 16);
-                    byteList.add(value);
+                if (row[i] != null && !row[i].isEmpty()) {
+                    try {
+                        byte value = (byte) Integer.parseInt(row[i], 16);
+                        byteList.add(value);
+                    } catch (NumberFormatException e) {
+                        System.err.println("Ошибка при преобразовании: " + row[i]);
+                    }
                 }
             }
         }
