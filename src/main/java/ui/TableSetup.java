@@ -18,7 +18,7 @@ public class TableSetup {
     private static final int DEFAULT_COLUMN_WIDTH = 80;
     private static final int SMALL_COLUMN_WIDTH = 50;
     private static final int DEFAULT_COLUMN_WIDTH_SMALL = 30;
-    private static final int INITIAL_DIVIDER_LOCATION = 450;
+    private static final int INITIAL_DIVIDER_LOCATION = 650;
     private static final Color HEADER_BACKGROUND_COLOR = Color.LIGHT_GRAY;
     private static final Color CELL_BORDER_COLOR = Color.WHITE;
 
