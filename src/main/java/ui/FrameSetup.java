@@ -19,7 +19,7 @@ public class FrameSetup {
         TableSetup tableSetup = new TableSetup();
         tableSetup.setupTable(frame, btm);
 
-        frame.setSize(new Dimension(1100, 400));
+        frame.setSize(new Dimension(1100, 350));
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
     }
