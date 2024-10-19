@@ -30,6 +30,13 @@ public class ButtonSetup {
         JButton insertCellRightButton = new JButton("Вставить ячейку справа");
         JButton insertCellLeftButton = new JButton("Вставить ячейку слева");
         JButton byteSearchButton = new JButton("Найти");
+        JButton emptyButton = new JButton();
+        JButton previousPageButton = new JButton("Предыдущая страница (←)");
+        JButton nextPageButton = new JButton("(→) Следующая страница");
+        JButton openFileButton = new JButton("Открыть файл");
+        JButton saveFileButton = new JButton("Сохранить файл");
+        JLabel navigationLabel = new JLabel("Page: " + fileActions.getCurrentPage() + " of " + fileActions.getTotalPages());
+
         binTable.changeSelection(0, 1, false, false);
 
         // Настройка бокса для выбора количества ячеек при вставке справа
@@ -59,9 +66,7 @@ public class ButtonSetup {
                                 nextColumn = nextCell[1];
                                 ((BinTableModel) binTable.getModel()).setValueAt(value, nextRow, nextColumn);
                             }
-
-                            binTable.repaint();
-                            binTable.changeSelection(selectedRow, selectedColumn + numberOfCells - 1, false, false);
+                            postActionUpdates(binTable, fileActions, btm, navigationLabel, selectedRow, selectedColumn + numberOfCells - 1);
                             dialog.dispose();
                         }
                     });
@@ -95,8 +100,7 @@ public class ButtonSetup {
                                 model.insertCellLeftAndShift(nextRow, nextColumn);
                                 model.setValueAt(value, nextRow, nextColumn);
                             }
-
-                            binTable.repaint();
+                            postActionUpdates(binTable, fileActions, btm, navigationLabel, selectedRow, selectedColumn);
                             dialog.dispose();
                         }
                     });
@@ -120,6 +124,7 @@ public class ButtonSetup {
                     if (editorComponent != null) {
                         editorComponent.requestFocusInWindow();
                     }
+                    postActionUpdates(binTable, fileActions, btm, navigationLabel, row, column);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку для редактирования.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
@@ -140,6 +145,8 @@ public class ButtonSetup {
                         }
                     }
                     binTable.repaint();
+                    fileActions.autoSaveFileAtPage(btm);
+                    fileActions.autoOpenFileAtPage(btm);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку для обнуления.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
@@ -161,8 +168,8 @@ public class ButtonSetup {
                             model.deleteCellAndShift(selectedRows[i], selectedColumns[j]);
                         }
                     }
-                    binTable.repaint();
-                    binTable.changeSelection(selectedRows[0], selectedColumns[0], false, false);
+                    model.fireTableDataChanged();
+                    postActionUpdates(binTable, fileActions, btm, navigationLabel, selectedRows[0], selectedColumns[0]);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку для удаления.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
@@ -210,8 +217,7 @@ public class ButtonSetup {
                             model.deleteCellAndShift(selectedRows[i], selectedColumns[j]);
                         }
                     }
-                    binTable.repaint();
-                    binTable.changeSelection(selectedRows[0], selectedColumns[0], false, false);
+                    postActionUpdates(binTable, fileActions, btm, navigationLabel, selectedRows[0], selectedColumns[0]);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
@@ -235,8 +241,7 @@ public class ButtonSetup {
                             model.setValueAt("00", selectedRows[i], selectedColumns[j]);
                         }
                     }
-                    binTable.repaint();
-                    binTable.changeSelection(selectedRows[0], selectedColumns[0], false, false);
+                    postActionUpdates(binTable, fileActions, btm, navigationLabel, selectedRows[0], selectedColumns[0]);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
@@ -258,7 +263,7 @@ public class ButtonSetup {
                                 btm.setValueAt(copiedBlock[i][j], selectedRows[i], selectedColumns[j]);
                             }
                         }
-                        binTable.repaint();
+                        postActionUpdates(binTable, fileActions, btm, navigationLabel, selectedRows[0], selectedColumns[0]);
                     } else {
                         JOptionPane.showMessageDialog(frame,
                                 "Размер скопированного блока и выделенного участка не совпадают",
@@ -291,8 +296,7 @@ public class ButtonSetup {
                                 model.setValueAt(copiedBlock[i][j], selectedRow, selectedColumn);
                             }
                         }
-                        binTable.repaint();
-                        binTable.changeSelection(selectedRow, selectedColumn, false, false);
+                        postActionUpdates(binTable, fileActions, btm, navigationLabel, selectedRow, selectedColumn);
                     } else {
                         JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                     }
@@ -319,8 +323,7 @@ public class ButtonSetup {
                                 model.setValueAt(copiedBlock[i][j], selectedRow, selectedColumn);
                             }
                         }
-                        binTable.repaint();
-                        binTable.changeSelection(selectedRow, selectedColumn, false, false);
+                        postActionUpdates(binTable, fileActions, btm, navigationLabel, selectedRow, selectedColumn);
                     } else {
                         JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                     }
@@ -340,6 +343,7 @@ public class ButtonSetup {
                 for (int i = 0; i < rowCount; i++) {
                     for (int j = 1; j < columnCount; j++) {
                         btm.setValueAt("", i, j);
+                        updateNavigationLabel(fileActions, navigationLabel);
                     }
                 }
             }
@@ -368,13 +372,58 @@ public class ButtonSetup {
             }
         });
 
+        emptyButton.setBorderPainted(false);
+        emptyButton.setContentAreaFilled(false);
+        emptyButton.setFocusPainted(false);
+        emptyButton.setEnabled(false);
+
+        // Обработчик для перехода на предыдущую страницу
+        previousPageButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                fileActions.autoSaveFileAtPage(btm);
+                fileActions.autoOpenFileAtPage(btm);
+                fileActions.previousPage(btm);
+                updateNavigationLabel(fileActions, navigationLabel);
+            }
+        });
+
+        // Обработчик для перехода на следующую страницу
+        nextPageButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                fileActions.autoSaveFileAtPage(btm);
+                fileActions.autoOpenFileAtPage(btm);
+                fileActions.nextPage(btm);
+                updateNavigationLabel(fileActions, navigationLabel);
+            }
+        });
+
+        // Обработчик для открытия пользователем файла
+        openFileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                fileActions.openFile(btm, actionEvent);
+                updateNavigationLabel(fileActions, navigationLabel);
+            }
+        });
+
+        // Обработчик для сохранения пользователем файла
+        saveFileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                fileActions.saveCurrentPageWithContext(actionEvent, btm);
+                updateNavigationLabel(fileActions, navigationLabel);
+            }
+        });
+
         // Настройка панели с кнопками
         JPanel buttonPanel = new JPanel(new GridBagLayout());
-        Component[] components = {editButton, resetButton, copyBlockButton, deleteButton, pasteWithoutShiftButton, byteSearchButton,
-                cutBlockWithShiftButton, cutBlockWithResetButton, pasteWithShiftLeftButton, pasteWithShiftRightButton,
-                insertCellLeftButton, insertCellLeftComboBox, insertCellRightButton, insertCellRightComboBox,
-                clearButton,};
-
+        Component[] components = {editButton, resetButton, copyBlockButton, deleteButton, pasteWithoutShiftButton,
+                byteSearchButton, cutBlockWithShiftButton, cutBlockWithResetButton, pasteWithShiftLeftButton,
+                pasteWithShiftRightButton, insertCellLeftButton, insertCellLeftComboBox, insertCellRightButton,
+                insertCellRightComboBox, clearButton, emptyButton, previousPageButton, nextPageButton,
+                navigationLabel, emptyButton, openFileButton, saveFileButton};
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(1, 1, 1, 1);
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -388,4 +437,22 @@ public class ButtonSetup {
 
         return buttonPanel;
     }
+
+    //Функция выполняет обновление состояния таблицы и файлов
+    private static void postActionUpdates(JTable binTable, FileActions fileActions, BinTableModel btm, JLabel navigationLabel, int selectedRow, int selectedColumn) {
+        binTable.repaint();
+        fileActions.autoSaveFileAtPage(btm);
+        fileActions.autoOpenFileAtPage(btm);
+        binTable.changeSelection(selectedRow, selectedColumn, false, false);
+        updateNavigationLabel(fileActions, navigationLabel);
+    }
+
+    //Метод для обновления панели навигации
+    private static void updateNavigationLabel(FileActions fileActions, JLabel navigationLabel) {
+        int currentPage = fileActions.getCurrentPage();
+        int totalPages = fileActions.getTotalPages();
+        navigationLabel.setText("Page: " + currentPage + " of " + totalPages);
+    }
+
 }
+//Это 486 строка
