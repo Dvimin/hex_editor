@@ -18,8 +18,6 @@ public class FrameSetup {
 
         TableSetup tableSetup = new TableSetup();
         tableSetup.setupTable(frame, btm);
-        MenuSetup menuSetup = new MenuSetup();
-        menuSetup.setupMenu(frame, btm, tableSetup);
 
         frame.setSize(new Dimension(1100, 400));
         frame.setVisible(true);
