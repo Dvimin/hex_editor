@@ -1,27 +1,38 @@
 package utils;
 
+import actions.FileActions;
 import ui.BinTableModel;
 
+import javax.swing.*;
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 public class ByteSearch {
-    // Модель таблицы для поиска
     private BinTableModel bintable;
+    private FileActions fileActions;
+    private int totalPages;
 
-    // Конструктор класса
-    public ByteSearch(BinTableModel table) {
+    // Конструктор для инициализации ByteSearch
+    public ByteSearch(BinTableModel table, FileActions fileActions) {
         this.bintable = table;
+        this.fileActions = fileActions;
+        this.totalPages = fileActions.getTotalPages();
     }
 
-    /**
-     * Выполняет поиск последовательности байтов в таблице.
-     *
-     * @param startRow    начальная строка для поиска
-     * @param startColumn начальный столбец для поиска
-     * @param sequence    массив строк, представляющих последовательность для поиска
-     * @param exactMatch  флаг точного соответствия при сравнении
-     * @return массив с координатами найденной последовательности [row, column], либо [-1, -1], если не найдено
-     */
+    // Поиск байтов по всем страницам
+    public int[] searchBytesInAllPages(int startRow, int startColumn, String[] sequence, boolean exactMatch, JLabel navigationLabel) throws IOException {
+        int[] result = searchBytes(startRow, startColumn, sequence, exactMatch);
+
+        while (result[0] == -1 && fileActions.hasNextPage()) {
+            fileActions.nextPage(bintable);
+            fileActions.updateNavigationLabel(navigationLabel);
+            result = searchBytes(0, 1, sequence, exactMatch);
+        }
+
+        return result;
+    }
+
+    // Поиск байтов на текущей странице
     public int[] searchBytes(int startRow, int startColumn, String[] sequence, boolean exactMatch) {
         int rowCount = bintable.getRowCount();
         int columnCount = bintable.getColumnCount();
@@ -29,7 +40,7 @@ public class ByteSearch {
 
         int currentRow = startRow;
         int currentColumn = startColumn;
-        boolean firstPass = true;
+
         while (true) {
             for (int row = currentRow; row < rowCount; row++) {
                 for (int column = (row == currentRow ? currentColumn : 0); column < columnCount; column++) {
@@ -67,14 +78,7 @@ public class ByteSearch {
                 }
                 currentColumn = 1;
             }
-            int[] nextCell = bintable.getNextCell(currentRow, currentColumn);
-            if (!firstPass || (nextCell[0] == startRow && nextCell[1] == startColumn)) {
-                break;
-            }
-
-            firstPass = false;
-            currentRow = 0;
-            currentColumn = 1;
+            break;
         }
         return new int[]{-1, -1};
     }

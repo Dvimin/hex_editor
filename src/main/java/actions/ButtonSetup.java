@@ -343,7 +343,7 @@ public class ButtonSetup {
                 for (int i = 0; i < rowCount; i++) {
                     for (int j = 1; j < columnCount; j++) {
                         btm.setValueAt("", i, j);
-                        updateNavigationLabel(fileActions, navigationLabel);
+                        fileActions.updateNavigationLabel(navigationLabel);
                     }
                 }
             }
@@ -356,10 +356,10 @@ public class ButtonSetup {
                 JFrame searchWindow = new JFrame("Поиск в таблице");
                 JPanel searchPanel = new JPanel(new BorderLayout());
 
-                ButtonUtils.setTable(binTable);
+                ButtonUtils.setTableAndFileActions(binTable, fileActions);
 
                 JPanel inputPanel = ButtonUtils.createInputPanel();
-                JPanel buttonPanel = ButtonUtils.createButtonPanel(inputPanel);
+                JPanel buttonPanel = ButtonUtils.createButtonPanel(inputPanel, navigationLabel);
                 searchPanel.add(inputPanel, BorderLayout.NORTH);
                 searchPanel.add(buttonPanel, BorderLayout.CENTER);
 
@@ -384,7 +384,7 @@ public class ButtonSetup {
                 fileActions.autoSaveFileAtPage(btm);
                 fileActions.autoOpenFileAtPage(btm);
                 fileActions.previousPage(btm);
-                updateNavigationLabel(fileActions, navigationLabel);
+                fileActions.updateNavigationLabel(navigationLabel);
             }
         });
 
@@ -395,7 +395,7 @@ public class ButtonSetup {
                 fileActions.autoSaveFileAtPage(btm);
                 fileActions.autoOpenFileAtPage(btm);
                 fileActions.nextPage(btm);
-                updateNavigationLabel(fileActions, navigationLabel);
+                fileActions.updateNavigationLabel(navigationLabel);
             }
         });
 
@@ -404,7 +404,7 @@ public class ButtonSetup {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 fileActions.openFile(btm, actionEvent);
-                updateNavigationLabel(fileActions, navigationLabel);
+                fileActions.updateNavigationLabel(navigationLabel);
             }
         });
 
@@ -413,7 +413,7 @@ public class ButtonSetup {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 fileActions.saveCurrentPageWithContext(actionEvent, btm);
-                updateNavigationLabel(fileActions, navigationLabel);
+                fileActions.updateNavigationLabel(navigationLabel);
             }
         });
 
@@ -444,15 +444,6 @@ public class ButtonSetup {
         fileActions.autoSaveFileAtPage(btm);
         fileActions.autoOpenFileAtPage(btm);
         binTable.changeSelection(selectedRow, selectedColumn, false, false);
-        updateNavigationLabel(fileActions, navigationLabel);
+        fileActions.updateNavigationLabel(navigationLabel);
     }
-
-    //Метод для обновления панели навигации
-    private static void updateNavigationLabel(FileActions fileActions, JLabel navigationLabel) {
-        int currentPage = fileActions.getCurrentPage();
-        int totalPages = fileActions.getTotalPages();
-        navigationLabel.setText("Page: " + currentPage + " of " + totalPages);
-    }
-
 }
-//Это 486 строка
