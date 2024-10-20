@@ -1,23 +1,24 @@
 package utils;
 
+import actions.FileActions;
 import ui.BinTableModel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ButtonUtils {
-    // Список полей поиска
     private static ArrayList<JTextField> searchFields = new ArrayList<>();
     private static JTable binTable;
     private static ByteSearch byteSearch;
 
-    // Установка таблицы для поиска
-    public static void setTable(JTable table) {
+    // Установка таблицы и обработчика файлов для поиска
+    public static void setTableAndFileActions(JTable table, FileActions fileActions) {
         binTable = table;
-        byteSearch = new ByteSearch((BinTableModel) binTable.getModel());
+        byteSearch = new ByteSearch((BinTableModel) binTable.getModel(), fileActions);
     }
 
     // Создание панели ввода для поиска
@@ -31,7 +32,7 @@ public class ButtonUtils {
     }
 
     // Создание панели кнопок для управления полем поиска
-    public static JPanel createButtonPanel(JPanel inputPanel) {
+    public static JPanel createButtonPanel(JPanel inputPanel, JLabel navigationLabel) {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
         // Кнопка добавления нового поля для поиска
@@ -76,7 +77,6 @@ public class ButtonUtils {
                         searchByte[i] = value;
                     }
 
-                    // Оbпределение начальной позиции для поиска
                     int startRow = binTable.getSelectedRow();
                     int startColumn = binTable.getSelectedColumn();
                     if (startRow == -1 || startColumn == -1) {
@@ -88,14 +88,18 @@ public class ButtonUtils {
                         startColumn = nextCell[1];
                     }
 
-                    // Выполнение поиска и получение результатов
-                    int[] foundCoordinates = byteSearch.searchBytes(startRow, startColumn, searchByte, false);
-                    int foundRow = foundCoordinates[0];
-                    int foundColumn = foundCoordinates[1];
-                    if (foundRow == -1 && foundColumn == -1) {
-                        JOptionPane.showMessageDialog(null, "Совпадений не найдено", "Ошибка", JOptionPane.ERROR_MESSAGE);
-                    } else {
-                        binTable.changeSelection(foundRow, foundColumn, false, false);
+                    // Выполнение поиска по всем страницам и получение результатов
+                    try {
+                        int[] foundCoordinates = byteSearch.searchBytesInAllPages(startRow, startColumn, searchByte, false, navigationLabel);
+                        int foundRow = foundCoordinates[0];
+                        int foundColumn = foundCoordinates[1];
+                        if (foundRow == -1 && foundColumn == -1) {
+                            JOptionPane.showMessageDialog(null, "Совпадений не найдено", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                        } else {
+                            binTable.changeSelection(foundRow, foundColumn, false, false);
+                        }
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(null, "Ошибка при доступе к файлу: " + ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "Введите двузначное число в формате 16-ричной системы (0-9, A-F), либо символы '*' или '?'", "Ошибка", JOptionPane.ERROR_MESSAGE);

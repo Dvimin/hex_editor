@@ -12,13 +12,14 @@ import java.nio.file.*;
 
 public class FileActions {
 
-    private static final int PAGE_SIZE = 256; // Размер страницы
+    public static final int PAGE_SIZE = 256; // Размер страницы
     private File currentFile;
     private File backupFile;
     private RandomAccessFile raf;
-    private int currentPage = 0;
-    private int totalPages = 0;
+    private static int currentPage = 0;
+    private static int totalPages = 0;
 
+    // Создание и открытие начального файла
     public void createAndOpenInitialFile(BinTableModel btm) {
         createInitialFileInResources();
         try {
@@ -30,6 +31,7 @@ public class FileActions {
         }
     }
 
+    // Создание начального файла в ресурсах
     public void createInitialFileInResources() {
         try {
             Path resourceFilePath = Paths.get("src/main/resources/InitialFile.txt");
@@ -204,6 +206,11 @@ public class FileActions {
         navigatePage(btm, currentPage - 1, "Вы на первой странице.");
     }
 
+    // Проверка на конец файла
+    public boolean hasNextPage() {
+        return currentPage < totalPages - 1;
+    }
+
     // Общий метод для навигации по страницам
     private void navigatePage(BinTableModel btm, int newPage, String boundaryMessage) {
         if (newPage >= 0 && newPage < totalPages) {
@@ -342,12 +349,12 @@ public class FileActions {
     }
 
     // Возвращает общее количество старниц в открытом файле
-    public int getTotalPages() {
+    public static int getTotalPages() {
         return (totalPages > 0) ? totalPages : 1;
     }
 
     // Возвращает номер текущей открытой страницы в открытом файле
-    public int getCurrentPage() {
+    public static int getCurrentPage() {
         return currentPage + 1;
     }
 
@@ -357,4 +364,13 @@ public class FileActions {
         JOptionPane.showMessageDialog(parent, fullMessage, "Ошибка", JOptionPane.ERROR_MESSAGE);
         e.printStackTrace();
     }
+
+    //Метод для обновления панели навигации
+    public static void updateNavigationLabel(JLabel navigationLabel) {
+        int currentPage = getCurrentPage();
+        int totalPages = getTotalPages();
+        navigationLabel.setText("Page: " + currentPage + " of " + totalPages);
+    }
+
+
 }
