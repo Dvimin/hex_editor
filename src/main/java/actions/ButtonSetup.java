@@ -168,8 +168,14 @@ public class ButtonSetup {
                             model.deleteCellAndShift(selectedRows[i], selectedColumns[j]);
                         }
                     }
-                    model.fireTableDataChanged();
-                    postActionUpdates(binTable, fileActions, btm, navigationLabel, selectedRows[0], selectedColumns[0]);
+                    byte[] allDataAfterDelete = model.getAllData();
+                    if (allDataAfterDelete.length == 0) {
+                        fileActions.openInitialFile(btm);
+                        fileActions.updateNavigationLabel(navigationLabel);
+                    } else {
+                        model.fireTableDataChanged();
+                        postActionUpdates(binTable, fileActions, btm, navigationLabel, selectedRows[0], selectedColumns[0]);
+                    }
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку для удаления.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
@@ -217,7 +223,13 @@ public class ButtonSetup {
                             model.deleteCellAndShift(selectedRows[i], selectedColumns[j]);
                         }
                     }
-                    postActionUpdates(binTable, fileActions, btm, navigationLabel, selectedRows[0], selectedColumns[0]);
+                    byte[] allDataAfterCut = model.getAllData();
+                    if (allDataAfterCut.length == 0) {
+                        fileActions.openInitialFile(btm);
+                        fileActions.updateNavigationLabel(navigationLabel);
+                    } else {
+                        postActionUpdates(binTable, fileActions, btm, navigationLabel, selectedRows[0], selectedColumns[0]);
+                    }
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
