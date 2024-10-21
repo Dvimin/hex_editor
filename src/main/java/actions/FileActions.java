@@ -20,23 +20,26 @@ public class FileActions {
     private static int totalPages = 0;
 
     // Создание и открытие начального файла
-    public void createAndOpenInitialFile(BinTableModel btm) {
-        createInitialFileInResources();
+    public void openInitialFile(BinTableModel btm) {
         try {
             Path resourceFilePath = Paths.get("src/main/resources/InitialFile.txt");
+            if (Files.notExists(resourceFilePath)) {
+                createInitialFileInResources();
+            }
+            closeAndDeleteBackup();
             currentFile = resourceFilePath.toFile();
+            createFileCopy(currentFile);
             openAndLoadFile(btm);
         } catch (IOException e) {
-            showErrorDialog(null, "Ошибка при открытии файла: ", e);
+            showErrorDialog(null, "Ошибка при открытии начального файла: ", e);
         }
     }
 
-    // Создание начального файла в ресурсах
+    // Создание начального файла в ресурсах с размером в одну страницу
     public void createInitialFileInResources() {
         try {
             Path resourceFilePath = Paths.get("src/main/resources/InitialFile.txt");
-
-            byte[] zeros = new byte[]{0x00};
+            byte[] zeros = new byte[1];
             Files.write(resourceFilePath, zeros, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             showErrorDialog(null, "Ошибка при создании файла в ресурсах: ", e);
@@ -67,16 +70,13 @@ public class FileActions {
         if (!Files.exists(backupDir)) {
             Files.createDirectory(backupDir);
         }
-        Path backupFilePath = Paths.get(backupDir.toString(), "backup.txt");
-        backupFile = backupFilePath.toFile();
+        backupFile = getBackupFilePath().toFile();
         Files.copy(file.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
     // Автоматическое открытие файла с определённой страницы файла backup
     public void autoOpenFileAtPage(BinTableModel btm) {
-        Path backupDirectoryPath = Paths.get("backup");
-        Path backupFilePath = backupDirectoryPath.resolve("backup.txt");
-        File backupFile = backupFilePath.toFile();
+        File backupFile = getBackupFilePath().toFile();
 
         if (backupFile.exists()) {
             try (RandomAccessFile raf = new RandomAccessFile(backupFile, "r");
@@ -97,6 +97,7 @@ public class FileActions {
         if (raf != null) {
             raf.close();
         }
+        File backupFile = getBackupFilePath().toFile();
         raf = new RandomAccessFile(backupFile, "r");
         totalPages = calculateTotalPages();
         if (pageNumber >= 0 && pageNumber < totalPages) {
@@ -110,10 +111,9 @@ public class FileActions {
     // Автоматическое сохранение всех стариц файла backup
     public void autoSaveFileAtPage(BinTableModel btm) {
         Path backupDirectoryPath = Paths.get("backup");
-        Path backupFilePath = backupDirectoryPath.resolve("backup.txt");
         Path tempBackupFilePath = backupDirectoryPath.resolve("backup2.txt");
-        File backupFile = backupFilePath.toFile();
         File tempBackupFile = tempBackupFilePath.toFile();
+        File backupFile = getBackupFilePath().toFile();
 
         try (FileOutputStream fos = new FileOutputStream(tempBackupFile);
              BufferedOutputStream bos = new BufferedOutputStream(fos)) {
@@ -186,6 +186,12 @@ public class FileActions {
         currentPage = pageNumber;
     }
 
+    // Метод для получения пути к файлу бэкапа
+    private Path getBackupFilePath() {
+        Path backupDirectoryPath = Paths.get("backup");
+        return backupDirectoryPath.resolve("backup.txt");
+    }
+
     // Обрезаем массив байтов до фактического количества считанных байтов
     private byte[] trimData(byte[] data, int length) {
         if (length < PAGE_SIZE) {
@@ -250,7 +256,7 @@ public class FileActions {
                 writeAllPages(bos, btm);
                 bos.flush();
                 JOptionPane.showMessageDialog(null, "Файл сохранен: " + selectedFile.getAbsolutePath(), "Сохранено", JOptionPane.INFORMATION_MESSAGE);
-                createAndOpenInitialFile(btm);
+                openInitialFile(btm);
 
             } catch (IOException e) {
                 showErrorDialog(null, "Ошибка при сохранении файла: ", e);

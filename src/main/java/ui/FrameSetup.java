@@ -14,7 +14,7 @@ public class FrameSetup {
 
         BinTableModel btm = new BinTableModel();
         FileActions fileActions = new FileActions();
-        fileActions.createAndOpenInitialFile(btm);
+        fileActions.openInitialFile(btm);
 
         TableSetup tableSetup = new TableSetup();
         tableSetup.setupTable(frame, btm);
