@@ -168,8 +168,14 @@ public class ButtonSetup {
                             model.deleteCellAndShift(selectedRows[i], selectedColumns[j]);
                         }
                     }
-                    model.fireTableDataChanged();
-                    postActionUpdates(binTable, fileActions, btm, navigationLabel, selectedRows[0], selectedColumns[0]);
+                    byte[] allDataAfterDelete = model.getAllData();
+                    if (allDataAfterDelete.length == 0) {
+                        fileActions.openInitialFile(btm);
+                        fileActions.updateNavigationLabel(navigationLabel);
+                    } else {
+                        model.fireTableDataChanged();
+                        postActionUpdates(binTable, fileActions, btm, navigationLabel, selectedRows[0], selectedColumns[0]);
+                    }
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку для удаления.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
@@ -217,7 +223,13 @@ public class ButtonSetup {
                             model.deleteCellAndShift(selectedRows[i], selectedColumns[j]);
                         }
                     }
-                    postActionUpdates(binTable, fileActions, btm, navigationLabel, selectedRows[0], selectedColumns[0]);
+                    byte[] allDataAfterCut = model.getAllData();
+                    if (allDataAfterCut.length == 0) {
+                        fileActions.openInitialFile(btm);
+                        fileActions.updateNavigationLabel(navigationLabel);
+                    } else {
+                        postActionUpdates(binTable, fileActions, btm, navigationLabel, selectedRows[0], selectedColumns[0]);
+                    }
                 } else {
                     JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите хотя бы одну ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
@@ -337,14 +349,19 @@ public class ButtonSetup {
         clearButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int rowCount = btm.getRowCount();
-                int columnCount = btm.getColumnCount();
-
-                for (int i = 0; i < rowCount; i++) {
-                    for (int j = 1; j < columnCount; j++) {
-                        btm.setValueAt("", i, j);
-                        fileActions.updateNavigationLabel(navigationLabel);
-                    }
+                int confirmed = JOptionPane.showOptionDialog(
+                        null,
+                        "Вы уверены, что хотите очистить все данные?",
+                        "Подтверждение",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[] {"Да", "Нет"},
+                        "Нет"
+                );
+                if (confirmed == 0) {
+                    fileActions.openInitialFile(btm);
+                    fileActions.updateNavigationLabel(navigationLabel);
                 }
             }
         });
