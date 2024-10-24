@@ -247,7 +247,7 @@ public class BinTableModel extends AbstractTableModel {
     @Override
     public String getValueAt(int rowIndex, int columnIndex) {
         String[] rows = dataArrayList.get(rowIndex);
-        return rows[columnIndex];
+        return (rows[columnIndex] != null) ? rows[columnIndex] : "";
     }
 
 
