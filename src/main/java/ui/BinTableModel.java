@@ -24,6 +24,10 @@ public class BinTableModel extends AbstractTableModel {
         fireTableCellUpdated(row, col);
     }
 
+    public int getNumber(int row, int col) {
+        return row * columnCount + col - 2;
+    }
+
     @Override
     public int getRowCount() {
         return dataArrayList.size();
@@ -49,6 +53,24 @@ public class BinTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
+    public byte[] getBytesInRange(int startIndex, int endIndex) {
+        ArrayList<Byte> byteList = new ArrayList<>();
+        for (int rowIndex = 0; rowIndex < getRowCount(); rowIndex++) {
+            String[] row = dataArrayList.get(rowIndex);
+            for (int i = Math.max(1, startIndex); i < Math.min(endIndex + 1, columnCount); i++) { // Ограничиваем по диапазону
+                if (row[i] != null && !row[i].isEmpty()) {
+                    try {
+                        byte value = (byte) Integer.parseInt(row[i], 16);
+                        byteList.add(value);
+                    } catch (NumberFormatException e) {
+                        System.err.println("Ошибка при преобразовании: " + row[i]);
+                    }
+                }
+            }
+        }
+        return convertToByteArray(byteList);
+    }
+
     public byte[] getAllData() {
         ArrayList<Byte> byteList = new ArrayList<>();
         for (String[] row : dataArrayList) {
@@ -64,11 +86,14 @@ public class BinTableModel extends AbstractTableModel {
             }
         }
 
+        return convertToByteArray(byteList);
+    }
+
+    private byte[] convertToByteArray(ArrayList<Byte> byteList) {
         byte[] byteArray = new byte[byteList.size()];
         for (int i = 0; i < byteList.size(); i++) {
             byteArray[i] = byteList.get(i);
         }
-
         return byteArray;
     }
 

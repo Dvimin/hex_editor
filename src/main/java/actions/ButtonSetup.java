@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Arrays;
 
 import ui.BinTableModel;
@@ -53,20 +54,24 @@ public class ButtonSetup {
                     CellInsertionDialog.showDialog(frame, binTable, selectedRow, selectedColumn, numberOfCells, "Введите значения", new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            BinTableModel model = (BinTableModel) binTable.getModel();
-                            int nextRow = selectedRow;
-                            int nextColumn = selectedColumn;
-                            JTextField[] textFields = CellInsertionDialog.getTextFields(); // Получаем ссылку на массив текстовых полей
-                            JDialog dialog = CellInsertionDialog.getDialog(); // Получаем ссылку на диалоговое окно
+                            JTextField[] textFields = CellInsertionDialog.getTextFields();
+                            JDialog dialog = CellInsertionDialog.getDialog();
+                            byte[] insertedBytes = new byte[numberOfCells];
                             for (int i = 0; i < numberOfCells; i++) {
-                                String value = textFields[i].getText();
-                                ((BinTableModel) binTable.getModel()).insertCellRightAndShift(nextRow, nextColumn);
-                                int[] nextCell = model.getNextCell(nextRow, nextColumn);
-                                nextRow = nextCell[0];
-                                nextColumn = nextCell[1];
-                                ((BinTableModel) binTable.getModel()).setValueAt(value, nextRow, nextColumn);
+                                String value = textFields[i].getText().trim();
+                                try {
+                                    insertedBytes[i] = (byte) Integer.parseInt(value, 16);
+                                } catch (NumberFormatException ex) {
+                                    JOptionPane.showMessageDialog(frame, "Неверное значение: " + value, "Ошибка", JOptionPane.ERROR_MESSAGE);
+                                    return;
+                                }
                             }
-                            postActionUpdates(binTable, fileActions, btm, navigationLabel, selectedRow, selectedColumn + numberOfCells - 1);
+                            int insertStartIndex = btm.getNumber(selectedRow, selectedColumn);
+                            binTable.changeSelection(selectedRow, selectedColumn, false, false);
+                            fileActions.autoSaveFileAtPage2(btm, insertStartIndex, insertedBytes);
+                            fileActions.autoOpenFileAtPage(btm);
+
+                            postActionUpdates(binTable, fileActions, btm, navigationLabel, selectedRow, selectedColumn);
                             dialog.dispose();
                         }
                     });
@@ -75,6 +80,40 @@ public class ButtonSetup {
                 }
             }
         });
+
+//        // Обработчик для вставки ячейки справа
+//        insertCellRightButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                int selectedRow = binTable.getSelectedRow();
+//                int selectedColumn = binTable.getSelectedColumn();
+//                if (selectedRow != -1 && selectedColumn != -1) {
+//                    int numberOfCells = (int) insertCellRightComboBox.getSelectedItem();
+//                    CellInsertionDialog.showDialog(frame, binTable, selectedRow, selectedColumn, numberOfCells, "Введите значения", new ActionListener() {
+//                        @Override
+//                        public void actionPerformed(ActionEvent e) {
+//                            BinTableModel model = (BinTableModel) binTable.getModel();
+//                            int nextRow = selectedRow;
+//                            int nextColumn = selectedColumn;
+//                            JTextField[] textFields = CellInsertionDialog.getTextFields(); // Получаем ссылку на массив текстовых полей
+//                            JDialog dialog = CellInsertionDialog.getDialog(); // Получаем ссылку на диалоговое окно
+//                            for (int i = 0; i < numberOfCells; i++) {
+//                                String value = textFields[i].getText();
+//                                ((BinTableModel) binTable.getModel()).insertCellRightAndShift(nextRow, nextColumn);
+//                                int[] nextCell = model.getNextCell(nextRow, nextColumn);
+//                                nextRow = nextCell[0];
+//                                nextColumn = nextCell[1];
+//                                ((BinTableModel) binTable.getModel()).setValueAt(value, nextRow, nextColumn);
+//                            }
+//                            postActionUpdates(binTable, fileActions, btm, navigationLabel, selectedRow, selectedColumn + numberOfCells - 1);
+//                            dialog.dispose();
+//                        }
+//                    });
+//                } else {
+//                    JOptionPane.showMessageDialog(frame, "Пожалуйста, выберите ячейку.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+//                }
+//            }
+//        });
 
         // Настройка комбобокса для выбора количества ячеек при вставке слева
         JComboBox<Integer> insertCellLeftComboBox = new JComboBox<>(new Integer[]{1, 2, 4, 8});

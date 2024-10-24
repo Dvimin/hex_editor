@@ -146,6 +146,67 @@ public class FileActions {
         }
     }
 
+    // Автоматическое сохранение всех стариц файла backup
+    public void autoSaveFileAtPage2(BinTableModel btm, int insertStartIndex, byte[] insertedBytes) {
+        Path backupDirectoryPath = Paths.get("backup");
+        Path tempBackupFilePath = backupDirectoryPath.resolve("backup2.txt");
+        File tempBackupFile = tempBackupFilePath.toFile();
+        File backupFile = getBackupFilePath().toFile();
+
+        try (FileOutputStream fos = new FileOutputStream(tempBackupFile);
+             BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+
+            writeAllPagesWithInsertion(bos, btm, insertStartIndex, insertedBytes);
+            bos.flush();
+        } catch (IOException e) {
+            showErrorDialog(null, "Ошибка при записи временного файла: ", e);
+            return;
+        }
+
+        try (FileInputStream fis = new FileInputStream(tempBackupFile);
+             FileOutputStream backupFos = new FileOutputStream(backupFile);
+             BufferedOutputStream backupBos = new BufferedOutputStream(backupFos)) {
+
+            byte[] bufferCopy = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = fis.read(bufferCopy)) != -1) {
+                backupBos.write(bufferCopy, 0, bytesRead);
+            }
+            backupBos.flush();
+
+        } catch (IOException e) {
+            showErrorDialog(null, "Ошибка при копировании данных во временный файл бэкапа: ", e);
+        }
+        try {
+            Files.delete(tempBackupFilePath);
+        } catch (IOException e) {
+            System.out.println("Не удалось удалить временный файл. Причина: " + e.getMessage());
+        }
+    }
+
+    private void writeAllPagesWithInsertion(BufferedOutputStream bos, BinTableModel btm, int insertStartIndex, byte[] insertedBytes) throws IOException {
+        for (int pageNumber = 0; pageNumber < currentPage; pageNumber++) {
+            byte[] pageData = loadPageData(pageNumber);
+            bos.write(pageData);
+        }
+
+        byte[] dataBeforeInsertion = btm.getBytesInRange(0, insertStartIndex);
+        bos.write(dataBeforeInsertion);
+
+        bos.write(insertedBytes);
+
+        byte[] dataAfterInsertion = btm.getBytesInRange(insertStartIndex + 1, btm.getColumnCount() - 1);
+        bos.write(dataAfterInsertion);
+
+        if (currentPage < totalPages - 1) {
+            for (int pageNumber = currentPage + 1; pageNumber < totalPages; pageNumber++) {
+                byte[] pageData = loadPageData(pageNumber);
+                bos.write(pageData);
+            }
+        }
+    }
+
+
     // Метод для очистки папки backup
     private void clearBackupDirectory(Path backupDir) throws IOException {
         if (Files.exists(backupDir)) {
