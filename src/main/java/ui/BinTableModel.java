@@ -4,19 +4,21 @@ import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 
 public class BinTableModel extends AbstractTableModel {
-    private int columnCount = 17;
-    private ArrayList<String[]> dataArrayList;
+    private final int columnCount = 17;
+    private final ArrayList<String[]> dataArrayList;
 
 
     public BinTableModel() {
         dataArrayList = new ArrayList<String[]>();
     }
 
+    // Указывает, редактируема ли ячейка в таблице
     @Override
     public boolean isCellEditable(int row, int column) {
         return column != 0;
     }
 
+    // Устанавливает значение ячейки по заданной строке и столбцу
     @Override
     public void setValueAt(Object value, int row, int col) {
         String[] rowData = dataArrayList.get(row);
@@ -24,11 +26,13 @@ public class BinTableModel extends AbstractTableModel {
         fireTableCellUpdated(row, col);
     }
 
+    // Возвращает количество строк в таблице
     @Override
     public int getRowCount() {
         return dataArrayList.size();
     }
 
+    // Возвращает название колонки в таблице
     @Override
     public String getColumnName(int columnIndex) {
         if (columnIndex == 0) {
@@ -38,17 +42,20 @@ public class BinTableModel extends AbstractTableModel {
         }
     }
 
+    // Возвращает количество колонок в таблице
     @Override
     public int getColumnCount() {
         return columnCount;
     }
 
 
+    // Очищает данные таблицы
     public void clearData() {
         dataArrayList.clear();
         fireTableDataChanged();
     }
 
+    // Возвращает все данные таблицы в виде массива байтов
     public byte[] getAllData() {
         ArrayList<Byte> byteList = new ArrayList<>();
         for (String[] row : dataArrayList) {
@@ -72,6 +79,7 @@ public class BinTableModel extends AbstractTableModel {
         return byteArray;
     }
 
+    // Добавляет данные в таблицу из массива байтов
     public void addData(byte[] data) {
         int dataIndex = 0;
         while (dataIndex < data.length) {
@@ -85,6 +93,7 @@ public class BinTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
+    // Добавляет пустую строку с заданным значением в таблицу
     public void addEmptyRowWithLogic(String value) {
         String[] row = new String[getColumnCount()];
         row[0] = String.format("%08X", dataArrayList.size());
@@ -96,6 +105,7 @@ public class BinTableModel extends AbstractTableModel {
         fireTableRowsInserted(dataArrayList.size() - 1, dataArrayList.size() - 1);
     }
 
+    // Удаляет строку из таблицы по индексу
     public void removeRow(int row) {
         if (row >= 0 && row < dataArrayList.size()) {
             dataArrayList.remove(row);
@@ -104,13 +114,13 @@ public class BinTableModel extends AbstractTableModel {
     }
 
 
-    // Смещение целой строки вправо
+    // Смещает содержимое строки вправо, начиная с первого элемента
     public String shiftAllRowRight(int row, String element) {
         int columnCount = getColumnCount();
-        String lastCellValue = getValueAt(row, columnCount - 1).toString();
+        String lastCellValue = getValueAt(row, columnCount - 1);
 
         for (int j = columnCount - 2; j >= 1; j--) {
-            String cellValue = getValueAt(row, j).toString();
+            String cellValue = getValueAt(row, j);
             setValueAt(cellValue, row, j + 1);
         }
 
@@ -120,15 +130,15 @@ public class BinTableModel extends AbstractTableModel {
         return lastCellValue;
     }
 
-    // Смещение выбранной строки
+    // Смещает выбранную строку вправо от указанного столбца
     public String shiftSelectedRowRight(int row, int column) {
         int columnCount = getColumnCount();
         if (column == columnCount - 1) {
             return "";
         }
-        String lastCellValue = getValueAt(row, columnCount - 1).toString();
+        String lastCellValue = getValueAt(row, columnCount - 1);
         for (int j = columnCount - 2; j > column; j--) {
-            String cellValue = getValueAt(row, j).toString();
+            String cellValue = getValueAt(row, j);
             setValueAt(cellValue, row, j + 1);
         }
         setValueAt("", row, column + 1);
@@ -136,11 +146,12 @@ public class BinTableModel extends AbstractTableModel {
         return lastCellValue;
     }
 
+    // Вставляет ячейку справа с логикой сдвига
     public void insertCellRightAndShift(int selectedRow, int selectedColumn) {
         int lastRow = getRowCount() - 1;
         int lastColumn = getColumnCount() - 1;
         if (selectedRow == lastRow) {
-            String lastElement = (String) getValueAt(lastRow, lastColumn);
+            String lastElement = getValueAt(lastRow, lastColumn);
             if (lastElement.equals("") && selectedColumn != lastColumn) {
                 shiftSelectedRowRight(selectedRow, selectedColumn);
             } else {
@@ -152,7 +163,7 @@ public class BinTableModel extends AbstractTableModel {
             for (int i = selectedRow + 1; i < lastRow; i++) {
                 valueToShift = shiftAllRowRight(i, valueToShift);
             }
-            String lastElement = (String) getValueAt(lastRow, lastColumn);
+            String lastElement = getValueAt(lastRow, lastColumn);
             if (lastElement.equals("")) {
                 shiftAllRowRight(lastRow, valueToShift);
             } else {
@@ -162,7 +173,7 @@ public class BinTableModel extends AbstractTableModel {
         }
     }
 
-    // для вставки пустой ячейки слева
+    // Вставляет пустую ячейку слева с логикой сдвига
     public void insertCellLeftAndShift(int selectedRow, int selectedColumn) {
         if (selectedRow == 0 && selectedColumn == 1) {
             insertCellRightAndShift(0, 0);
@@ -174,7 +185,7 @@ public class BinTableModel extends AbstractTableModel {
         insertCellRightAndShift(selectedRow, selectedColumn);
     }
 
-    // для удаления ячейки и последующего сдвига
+    // Смещает содержимое строки влево с заданным элементом
     public String shiftAllRowLeft(int row, String element) {
         int columnCount = getColumnCount();
         Object firstCellValueObj = getValueAt(row, 1);
@@ -192,6 +203,7 @@ public class BinTableModel extends AbstractTableModel {
         return firstCellValue;
     }
 
+    // Смещает выбранную строку влево с логикой замещения
     public void shiftSelectedRowLeft(int row, int column, String element) {
         int columnCount = getColumnCount();
         if (column > 0) {
@@ -204,6 +216,7 @@ public class BinTableModel extends AbstractTableModel {
         }
     }
 
+    // Удаляет ячейку и сдвигает остальные ячейки
     public void deleteCellAndShift(int selectedRow, int selectedColumn) {
         int lastRow = getRowCount() - 1;
         int lastColumn = getColumnCount() - 1;
@@ -215,6 +228,7 @@ public class BinTableModel extends AbstractTableModel {
     }
 
 
+    // Возвращает следующую ячейку по порядку
     public int[] getNextCell(int currentRow, int currentColumn) {
         int lastRow = getRowCount() - 1;
         int lastColumn = getColumnCount() - 1;
@@ -230,6 +244,7 @@ public class BinTableModel extends AbstractTableModel {
         }
     }
 
+    // Возвращает предыдущую ячейку по порядку
     public int[] getBackCell(int currentRow, int currentColumn) {
         int lastRow = getRowCount() - 1;
         int lastColumn = getColumnCount() - 1;
@@ -244,6 +259,7 @@ public class BinTableModel extends AbstractTableModel {
         }
     }
 
+    // Возвращает значение ячейки по строке и столбцу
     @Override
     public String getValueAt(int rowIndex, int columnIndex) {
         String[] rows = dataArrayList.get(rowIndex);
